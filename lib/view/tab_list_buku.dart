@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:opac_android_kp/custom/custom_description_tile.dart';
 
 class TabListBuku extends StatefulWidget {
   @override
@@ -8,62 +10,30 @@ class TabListBuku extends StatefulWidget {
 class _TabListBukuState extends State<TabListBuku> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              color: Color(0xFFecf0f1),
+    return Container(
+    color: Color(0xfff1f2f6),
+      child:  ListView(
+        padding: const EdgeInsets.fromLTRB(5.0, 1.0, 5.0, 1.0),
+        itemExtent: 135.0,
+        children: <CustomDescTile>[
+          CustomDescTile(
+            cover: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(9.0),
+                color: Colors.black,
+                image: DecorationImage(
+                  image: AssetImage("images/learning.jpg"),
+                  fit: BoxFit.fill,
+                ),
+              ),
             ),
-          ),
-          ListView(
-            children: <Widget>[
-              Stack(
-                children: <Widget>[
-                  Card(
-                    child: Container(
-                      margin: EdgeInsets.fromLTRB(7.0, 16.0, 0.0, 0.0),
-                      child: Card(
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              width: 90.0,
-                              height: 100.0,
-                              color: Colors.black,
-                            ),
-                            Text("")
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(15.0, 5.0, 0.0, 0.0),
-                    width: 75.0,
-                    height: 100.0,
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            blurRadius: 20.0,
-                            spreadRadius: -7.5,
-                            color: Colors.transparent.withOpacity(0.5),
-                            offset: Offset(
-                              0.0,
-                              10.0,
-                            )),
-                      ],
-                      image: DecorationImage(
-                        image: AssetImage("images/book.png"),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  )
-                ],
-              )
-            ],
+            judul: "bfefefefefefeyfgyegfeygfyegfyegfeygfeygfeyfgeyfgeyfgeyfgyegfyegfyegfe",
+            pengarang: 'Okyra Asyrafi Guchan',
+            subjek: 'bakwan',
           )
         ],
       ),
     );
+     
   }
 }
