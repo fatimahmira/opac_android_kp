@@ -10,24 +10,27 @@ class CustomDescTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(9.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: cover,
-            ),
-            Expanded(
-              flex: 2,
-              child: _BukuDeskripsi(
-                  judul: judul, pengarang: pengarang, subjek: subjek),
-            )
-          ],
+    return Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: SizedBox(
+          height: 135.0,
+          child: Card(
+            child: Padding(padding: EdgeInsets.all(9.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                AspectRatio(
+                  aspectRatio: 1.0,
+                  child: cover,
+                ),
+                Expanded(
+                  child: _BukuDeskripsi(
+                      judul: judul, pengarang: pengarang, subjek: subjek),
+                ),
+              ],
+            ),)
         ),
-      )
+      ),
     );
   }
 }

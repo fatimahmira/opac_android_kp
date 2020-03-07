@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:opac_android_kp/view/tab_list_buku.dart';
+import 'package:opac_android_kp/view/tab_list_subjek.dart';
 import 'package:shifting_tabbar/shifting_tabbar.dart';
 
 
@@ -31,7 +32,7 @@ class _TabListState extends State<TabList> {
         body: TabBarView(
           children: <Widget>[
             TabListBuku(),
-            Icon(Icons.add),
+            TabListSubjek(),
           ],
         ),
       ),
