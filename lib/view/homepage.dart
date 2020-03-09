@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:opac_android_kp/view/tab_list.dart';
+import 'package:opac_android_kp/view/tab_search.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,10 +15,7 @@ class _HomePageState extends State<HomePage> {
       TextStyle(fontWeight: FontWeight.bold, fontSize: 30);
   List<Widget> _widgetoptions = <Widget>[
     TabList(),
-    Text(
-      'Index 1 : Search',
-      style: options,
-    ),
+    TabSearch(),
     Text(
       'Index 2 : Akun',
       style: options,

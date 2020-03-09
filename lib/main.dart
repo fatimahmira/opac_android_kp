@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:opac_android_kp/splashScreen.dart';
 import 'package:opac_android_kp/view/homepage.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        appBarTheme: AppBarTheme(elevation: 0),
-      ),
-      home: HomePage(),
-    );
-  }
-}
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
+          );
+        }
+      }
+      

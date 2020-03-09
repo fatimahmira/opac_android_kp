@@ -21,6 +21,7 @@ dependencies:
     sdk: flutter
   shifting_tabbar: ^0.3.1
   toast: ^0.1.5
+  http: ^0.12.0+2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
