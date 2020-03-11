@@ -27,7 +27,7 @@ class _TabSearchState extends State<TabSearch> {
         // await http.get('http://127.0.0.1/opac/public/api/v1/buku/get-all');
 
         //  await http.get('http://10.126.22.224/opac/public/api/v1/buku');
-        await http.get('http://172.16.145.26/opac/public/api/v1/buku');
+        await http.get('http://192.168.137.138/opac/public/api/v1/buku');
     // await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
 
     var datum = List<Datum>();

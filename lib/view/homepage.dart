@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Opac',
+          'OPAC',
           style: TextStyle(
             fontFamily: "AdoraChalie",
             fontSize: 48.0,
