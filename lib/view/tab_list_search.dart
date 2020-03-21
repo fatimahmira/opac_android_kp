@@ -4,12 +4,12 @@ import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/view/detailScreen.dart';
 import 'package:opac_android_kp/view/view_form.dart/createBuku.dart';
 
-class TabSearch extends StatefulWidget {
+class TabListSearch extends StatefulWidget {
   @override
-  _TabSearchState createState() => _TabSearchState();
+  _TabListSearchState createState() => _TabListSearchState();
 }
 
-class _TabSearchState extends State<TabSearch> {
+class _TabListSearchState extends State<TabListSearch> {
   ApiService _apiService = ApiService();
   List<Datum> _posts = List<Datum>();
   List<Datum> _postsForDisplay = List<Datum>();
@@ -34,24 +34,9 @@ class _TabSearchState extends State<TabSearch> {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Fetch Data Example',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
         home: Scaffold(
             backgroundColor: (Colors.blue),
-            appBar: AppBar(
-              title: Text('Fetch Data Example'),
-              actions: <Widget>[
-                IconButton(
-                    tooltip: ("Tambah Data Buku"),
-                    padding: const EdgeInsets.only(right: 20.0),
-                    icon: Icon(Icons.add),
-                    onPressed: () => Navigator.of(context).push(
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) => CreateBuku())))
-              ],
-            ),
+            
             body: Column(children: <Widget>[
               _searchBar(),
 

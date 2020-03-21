@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:opac_android_kp/view/tab_list_buku.dart';
+import 'package:opac_android_kp/view/tab_list_search.dart';
 import 'package:opac_android_kp/view/tab_list_subjek.dart';
 import 'package:shifting_tabbar/shifting_tabbar.dart';
 
@@ -13,12 +14,16 @@ class _TabListState extends State<TabList> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: ShiftingTabBar(
           color: Colors.blue,
           brightness: Brightness.dark,
           tabs: [
+            ShiftingTab(
+              icon: Icon(Icons.search),
+              text: "Cari Buku",
+            ),
             ShiftingTab(
               icon: Icon(Icons.library_books),
               text: "Buku",
@@ -31,6 +36,7 @@ class _TabListState extends State<TabList> {
         ),
         body: TabBarView(
           children: <Widget>[
+            TabListSearch(),
             TabListBuku(),
             TabListSubjek(),
           ],

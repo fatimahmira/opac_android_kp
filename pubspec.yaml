@@ -20,6 +20,10 @@ dependencies:
   flutter:
     sdk: flutter
   shifting_tabbar: ^0.3.1
+  datetime_picker_formfield: ^1.0.0-pre.5
+  sweetalert: ^0.0.1
+  expandable_card: ^0.0.3+1
+  
   toast: ^0.1.5
   http: ^0.12.0+2
 
