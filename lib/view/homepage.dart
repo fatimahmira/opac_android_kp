@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:opac_android_kp/view/tab_list.dart';
-import 'package:opac_android_kp/view/tab_search.dart';
+import 'package:opac_android_kp/view/tab_list_buku.dart';
+import 'package:opac_android_kp/view/tab_list_search.dart';
+import 'package:opac_android_kp/view/tab_list_subjek.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,12 +15,9 @@ class _HomePageState extends State<HomePage> {
   static const TextStyle options =
       TextStyle(fontWeight: FontWeight.bold, fontSize: 30);
   List<Widget> _widgetoptions = <Widget>[
-    TabList(),
-    TabSearch(),
-    Text(
-      'Index 2 : Akun',
-      style: options,
-    ),
+    TabListSearch(),
+    TabListBuku(),
+    TabListSubjek()
   ];
 
 // when  the item on tapped this function will active
@@ -33,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 161, 211, 255),
         centerTitle: true,
         title: const Text(
           'OPAC',
@@ -47,15 +46,15 @@ class _HomePageState extends State<HomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.home,
+              Icons.search,
             ),
-            title: Text('Home'),
+            title: Text('Cari'),
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.search,
+              Icons.home,
             ),
-            title: Text('Search'),
+            title: Text('Home'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),

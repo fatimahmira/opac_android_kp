@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:opac_android_kp/view/homepage.dart';
+import 'package:opac_android_kp/view/tab_list.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -26,7 +27,8 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.red[300],
       body: Center(
-        child: Image.asset('assets/logo.png') ,),
+        child: Image.asset('images/logo.png') ,
+        ),
     );
   }
 }

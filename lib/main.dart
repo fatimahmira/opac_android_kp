@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:opac_android_kp/splashScreen.dart';
-import 'package:opac_android_kp/view/homepage.dart';
 
 void main() => runApp(MyApp());
 

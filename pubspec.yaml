@@ -23,6 +23,12 @@ dependencies:
   datetime_picker_formfield: ^1.0.0-pre.5
   sweetalert: ^0.0.1
   expandable_card: ^0.0.3+1
+  animations: ^1.0.0+5
+  flutter_typeahead: ^1.8.0
+  column_scroll_view: ^1.0.0
+  custom_scrollable_screen: ^2.0.0
+  giffy_dialog: ^1.7.0
+  animated_list_view_scroll: ^1.0.2
   
   toast: ^0.1.5
   http: ^0.12.0+2
@@ -52,7 +58,14 @@ flutter:
    - images/book.png
    - images/cover_default.png
    - images/learning.jpg
-
+   - images/logo.png
+   - images/baca_buku.png
+   - images/baca_bukuu.jpg
+   - images/img_2x.jpg
+   - images/buku.JPG
+   - images/buku.GIF
+   - images/bukucover.JPG
+   - images/coverbuku.JPG
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

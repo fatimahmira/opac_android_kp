@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:opac_android_kp/Api/ApiService.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/view/detailScreen.dart';
@@ -18,11 +19,13 @@ class _TabListSearchState extends State<TabListSearch> {
   int page = 1;
 
   bool isLoading = false;
+  bool isVisible = false;
 
   @override
   void initState() {
     _apiService.fetchPost().then((value) {
       setState(() {
+        isVisible = false;
         _posts.addAll(value);
         _postsForDisplay = _posts;
       });
@@ -35,82 +38,79 @@ class _TabListSearchState extends State<TabListSearch> {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
-            backgroundColor: (Colors.blue),
-            
-            body: Column(children: <Widget>[
-              _searchBar(),
-
-              SizedBox(
-                
-                height: MediaQuery.of(context).size.height - kBottomNavigationBarHeight,
-                child: new Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white
-                  ),
-                  child: _list(),
-
-                  
-                )
-                
+          // backgroundColor: (Colors.blue),
+          body: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("images/buku.GIF"),
+                  fit: BoxFit.cover,
                 ),
-              // Container(
-              //     height: MediaQuery.of(context).size.height - 0,
-              //     decoration: BoxDecoration(
-              //       color: Colors.white,
-              //       borderRadius: BorderRadius.only(
-              //           topLeft: Radius.circular(75.0),
-              //           topRight: Radius.circular(75.0)),
-              //     ),
-              //     child: ListView(
-              //         primary: false,
-              //         padding: EdgeInsets.all(0.0),
-              //         children: <Widget>[
-              //           Padding(
-              //               padding: EdgeInsets.only(top: 45.0, bottom: 0.0),
-              //               child: Container(
-              //                   height:
-              //                       MediaQuery.of(context).size.height - 300.0,
-              //                   child: _list()))
-              //         ]))
-            ])));
+              ),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    height: 15,
+                  ),
+                  Text(
+                    "Cari Buku Berdasarkan",
+                    style: TextStyle(
+                        fontSize: 30,
+                        color: Colors.white,
+                        decoration: TextDecoration.none),
+                  ),
+                  _searchBar(),
+                  Visibility(visible: isVisible, child: _list()),
+                ],
+              )),
+        ));
+  }
 
-    // ListView(children: [
-    //                 Text("data"),
-    //                 Text("data"),
-    //                 Text("data")
+  _sizedBox() {
+    return SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: new Container(
+          decoration: BoxDecoration(color: Colors.white),
+          child: _list(),
+        ));
+  }
 
-    //     Expanded(
-    //   child: new FutureBuilder<List<Datum>>(
-    //     future: _apiService.fetchPost(),
-    //     builder: (context, snapshot) {
-    //       if (snapshot.hasError) print(snapshot.error);
-
-    //       return snapshot.hasData
-    //           ? new ListView.builder(
-    //               itemCount: _postsForDisplay.length,
-    //               itemBuilder: (context, index) {
-    //                 return _listtile(index);
-    //               })
-    //           : _circularProcces();
-    //     },
-    //   ),
-    // ),
+  _typeAhead() {
+    return TypeAheadField(
+      textFieldConfiguration: TextFieldConfiguration(
+          autofocus: true,
+          style: DefaultTextStyle.of(context)
+              .style
+              .copyWith(fontStyle: FontStyle.italic),
+          decoration: InputDecoration(border: OutlineInputBorder())),
+      suggestionsCallback: (pattern) async {
+        return await _apiService.fetchPost();
+      },
+      itemBuilder: (context, suggestion) {
+        return _listtile(suggestion);
+      },
+      onSuggestionSelected: (suggestion) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => DetailScreen(idBuku: suggestion)));
+      },
+    );
   }
 
   _list() {
-    return FutureBuilder<List<Datum>>(
-      future: _apiService.fetchPost(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) print(snapshot.error);
+    return Expanded(
+      child: FutureBuilder<List<Datum>>(
+        future: _apiService.fetchPost(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
 
-        return snapshot.hasData
-            ? new ListView.builder(
-                itemCount: _postsForDisplay.length,
-                itemBuilder: (context, index) {
-                  return _listtile(index);
-                })
-            : _circularProcces();
-      },
+          return snapshot.hasData
+              ? new ListView.builder(
+                  itemCount: _postsForDisplay.length,
+                  itemBuilder: (context, index) {
+                    return _listtile(index);
+                  })
+              : _circularProcces();
+        },
+      ),
     );
   }
 
@@ -127,7 +127,7 @@ class _TabListSearchState extends State<TabListSearch> {
         Padding(
           padding: const EdgeInsets.all(5.0),
           child: TextField(
-            style: TextStyle(color: Colors.white),
+            // style: TextStyle(color: Colors.white),
             decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
@@ -140,13 +140,17 @@ class _TabListSearchState extends State<TabListSearch> {
             controller: editingController,
             onChanged: (text) {
               text = text.toLowerCase();
-
-              setState(() {
-                _postsForDisplay = _posts.where((post) {
-                  var postTitle = post.judul.toLowerCase();
-                  return postTitle.contains(text);
-                }).toList();
-              });
+              if (text.isNotEmpty) {
+                setState(() {
+                  isVisible = true;
+                  _postsForDisplay = _posts.where((post) {
+                    var postTitle = post.judul.toLowerCase();
+                    return postTitle.contains(text);
+                  }).toList();
+                });
+              } else if (text.isEmpty) {
+                isVisible = false;
+              }
             },
           ),
         ),

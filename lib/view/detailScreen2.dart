@@ -1,23 +1,30 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:expandable_card/expandable_card.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:opac_android_kp/Api/ApiService.dart';
+import 'package:opac_android_kp/Class/Buku.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/custom/custom_vertical_list.dart';
 import 'package:opac_android_kp/view/tab_list.dart';
+import 'package:opac_android_kp/view/tab_list_search.dart';
 import 'package:opac_android_kp/view/view_form.dart/editBuku.dart';
 import 'package:sweetalert/sweetalert.dart';
 
-class DetailScreen extends StatefulWidget {
+class DetailScreen2 extends StatefulWidget {
   // int id;
   // DetailScreen({this.id});
 
   int idBuku;
-  DetailScreen({this.idBuku});
+  DetailScreen2({this.idBuku});
 
   @override
-  _DetailScreenState createState() => _DetailScreenState();
+  _DetailScreen2State createState() => _DetailScreen2State();
 }
 
-class _DetailScreenState extends State<DetailScreen> {
+class _DetailScreen2State extends State<DetailScreen2> {
   int id = 0;
   ApiService _apiService = ApiService();
   Datum bukuClass;
@@ -48,127 +55,77 @@ class _DetailScreenState extends State<DetailScreen> {
     return Stack(
       children: <Widget>[
         Container(
-          height: double.infinity,
-          color: Colors.blueGrey,
+           decoration: new BoxDecoration(
+            color: Colors.white,
+          ),
         ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              height: 250,
-              width: 250,
-              margin: EdgeInsets.only(top: 90.0, left: 30.0),
-              decoration: new BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  image: new DecorationImage(
-                      image: new AssetImage("images/coverbuku.JPG"),
-                      fit: BoxFit.cover)),
-            ),
-            Container(
-              alignment: Alignment.topLeft,
-              margin: EdgeInsets.only(top: 120.0, left: 30.0),
-              child: Column(
-                children: <Widget>[
-                  Text(
-                    "Pages:",
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                        decoration: TextDecoration.none),
-                  ),
-                  Text(
-                    bukuClass.jumlahHalaman.isEmpty
-                        ? "-"
-                        : bukuClass.jumlahHalaman,
-                    style: TextStyle(
-                        fontSize: 35,
-                        color: Colors.white,
-                        decoration: TextDecoration.none),
-                  ),
-                  Container(
-                    height: 20,
-                  ),
-                  Text(
-                    "Year:",
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                        decoration: TextDecoration.none),
-                  ),
-                  Text(
-                    bukuClass.tahunTerbit.isEmpty
-                        ? "-"
-                        : bukuClass.tahunTerbit,
-                    style: TextStyle(
-                        fontSize: 35,
-                        color: Colors.white,
-                        decoration: TextDecoration.none),
-                  ),
-                ],
-              ),
-            ),
-          ],
+        Container(
+          height: 350,
+          width: 500,
+          decoration: new BoxDecoration(
+              borderRadius:
+                  BorderRadius.only(bottomLeft: Radius.circular(50.0)),
+              image: new DecorationImage(
+                  alignment: Alignment.topLeft,
+                  image: new AssetImage("images/img_2x.jpg"),
+                  fit: BoxFit.fill)),
         ),
         Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: new AppBar(
             backgroundColor: Colors.transparent,
-            elevation: 0.0,
-            iconTheme: IconThemeData(color: Colors.white, opacity: 1.0),
-            actions: <Widget>[_editData(bukuClass), _hapusData(bukuClass)],
-          ),
-          body: ListView(
-            children: <Widget>[
-              Container(
-                height: 200,
-                color: Colors.transparent,
-              ),
-              Stack(
-                children: <Widget>[
+            appBar: new AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
+              iconTheme: IconThemeData(color: Colors.white, opacity: 1.0),
+              actions: <Widget>[_editData(bukuClass), _hapusData(bukuClass)],
+            ),
+            body: new Container(
+              height: double.infinity,
+              padding:
+                  const EdgeInsets.only(top: 150.0, right: 30.0, left: 30.0, bottom: 30.0),
+              child: Container(
+                child:
+                  new 
                   Card(
-                    margin: EdgeInsets.only(top: 37.0),
-                    color: Colors.white,
-                    shape: new RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.grey),
-                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                    child: 
-                    // Expanded(
-                    //   child: new 
-                      FutureBuilder<Datum>(
-                        future: _apiService.fetchDetail(widget.idBuku),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) print(snapshot.error);
-
-                          return snapshot.hasData
-                              ? _details(bukuClass)
-                              : _circularProcces();
-                        },
-                      ),
-                    // ),
-                  ),
-                  Container(
-                    alignment: Alignment.topRight,
-                    margin: EdgeInsets.only(right: 30),
-                    child: Card(
-                      color: Colors.white,
                       shape: new RoundedRectangleBorder(
-                          side: BorderSide(color: Colors.pink),
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(20.0))),
-                      child: IconButton(
-                          icon: Icon(Icons.favorite_border),
-                          color: Colors.red,
-                          iconSize: 50,
-                          onPressed: () {}),
-                    ),
-                  ),
-                ],
+                          side: BorderSide(color: Colors.grey),
+                          borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Expanded(
+                              child: new FutureBuilder<Datum>(
+                                future: _apiService.fetchDetail(widget.idBuku),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) print(snapshot.error);
+
+                                  return snapshot.hasData
+                                      ? _details(bukuClass)
+                                      : _circularProcces();
+                                },
+                              ),
+                            ),
+                            _listBukuTerkait(),
+                            
+                          ]
+                          )
+                          ),
+                
               ),
-            ],
-          ),
-        ),
+            )),
+        
       ],
     );
+  }
+
+  _gambar() {
+    return Container(
+        decoration: BoxDecoration(
+      image: DecorationImage(
+        alignment: Alignment.topCenter,
+        image: AssetImage("images/baca_bukuu.jpg"),
+        fit: BoxFit.contain,
+      ),
+    ));
   }
 
   _circularProcces() {
@@ -183,7 +140,7 @@ class _DetailScreenState extends State<DetailScreen> {
   _details(Datum bk) {
     String kosong = " - ";
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      // mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Container(
           height: 30.0,
@@ -192,6 +149,7 @@ class _DetailScreenState extends State<DetailScreen> {
           bk.noIndukBuku,
           style: TextStyle(),
           textAlign: TextAlign.right,
+          
         ),
         Text(
           bk.judul,
@@ -202,7 +160,7 @@ class _DetailScreenState extends State<DetailScreen> {
           textAlign: TextAlign.center,
         ),
         Container(
-          height: 220.0,
+          height: 20.0,
         ),
         Text(
           "Pengarang : ${bk.pengarang.isEmpty ? kosong : bk.pengarang}",
@@ -278,7 +236,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 ))
           ],
         ),
-
+        
         // Expanded(
         //   child: ListView(
         //     scrollDirection: Axis.horizontal,
@@ -300,7 +258,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
           return snapshot.hasData
               ? new ListView.builder(
-                  scrollDirection: Axis.horizontal,
+                scrollDirection: Axis.horizontal,
                   itemCount: _bukuTerkait.length,
                   itemBuilder: (context, index) {
                     return _listtile(index);
@@ -318,7 +276,7 @@ class _DetailScreenState extends State<DetailScreen> {
           child: InkWell(
             onTap: () {
               Navigator.of(context).push(new MaterialPageRoute(
-                  builder: (BuildContext context) => new DetailScreen(
+                  builder: (BuildContext context) => new DetailScreen2(
                         idBuku: _bukuTerkait[index].id,
                       )));
             },
@@ -358,14 +316,6 @@ class _DetailScreenState extends State<DetailScreen> {
               return false;
             }
           });
-        });
-  }
-
-  _back() {
-    return IconButton(
-        icon: Icon(Icons.arrow_back_ios),
-        onPressed: () {
-          Navigator.pop(context);
         });
   }
 }
