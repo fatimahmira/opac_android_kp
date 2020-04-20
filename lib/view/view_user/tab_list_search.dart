@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:opac_android_kp/Api/ApiService.dart';
 import 'package:opac_android_kp/Class/Post.dart';
-import 'package:opac_android_kp/view/detailScreen.dart';
-import 'package:opac_android_kp/view/view_form.dart/createBuku.dart';
+import 'package:opac_android_kp/view/view_user/detailScreen2.dart';
 
 class TabListSearch extends StatefulWidget {
   @override
@@ -17,52 +15,61 @@ class _TabListSearchState extends State<TabListSearch> {
 
   TextEditingController editingController = TextEditingController();
   int page = 1;
+  String text = "";
 
   bool isLoading = false;
   bool isVisible = false;
 
   @override
   void initState() {
-    _apiService.fetchPost().then((value) {
+    this.text = editingController.text.toString();
+    // print(text);
+    _apiService.search(text).then((value){
       setState(() {
         isVisible = false;
         _posts.addAll(value);
         _postsForDisplay = _posts;
       });
+
     });
+    // _apiService.fetchPost().then((value) {
+    //   setState(() {
+    //     isVisible = false;
+    //     _posts.addAll(value);
+    //     _postsForDisplay = _posts;
+    //   });
+    // });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          // backgroundColor: (Colors.blue),
-          body: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("images/buku.GIF"),
-                  fit: BoxFit.cover,
-                ),
+      debugShowCheckedModeBanner: false,
+      home: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("images/buku.GIF"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: 15,
               ),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    height: 15,
-                  ),
-                  Text(
-                    "Cari Buku Berdasarkan",
-                    style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.white,
-                        decoration: TextDecoration.none),
-                  ),
-                  _searchBar(),
-                  Visibility(visible: isVisible, child: _list()),
-                ],
-              )),
-        ));
+              Text(
+                "Cari Buku Berdasarkan",
+                style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.white,
+                    decoration: TextDecoration.none),
+              ),
+              _searchBar(),
+              Visibility(visible: isVisible, child: _list()),
+            ],
+          )),
+    );
   }
 
   _sizedBox() {
@@ -74,31 +81,10 @@ class _TabListSearchState extends State<TabListSearch> {
         ));
   }
 
-  _typeAhead() {
-    return TypeAheadField(
-      textFieldConfiguration: TextFieldConfiguration(
-          autofocus: true,
-          style: DefaultTextStyle.of(context)
-              .style
-              .copyWith(fontStyle: FontStyle.italic),
-          decoration: InputDecoration(border: OutlineInputBorder())),
-      suggestionsCallback: (pattern) async {
-        return await _apiService.fetchPost();
-      },
-      itemBuilder: (context, suggestion) {
-        return _listtile(suggestion);
-      },
-      onSuggestionSelected: (suggestion) {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => DetailScreen(idBuku: suggestion)));
-      },
-    );
-  }
-
   _list() {
     return Expanded(
       child: FutureBuilder<List<Datum>>(
-        future: _apiService.fetchPost(),
+        future: _apiService.search(text),
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
 
@@ -132,25 +118,26 @@ class _TabListSearchState extends State<TabListSearch> {
                 filled: true,
                 fillColor: Colors.white,
                 labelText: "Search",
-                suffixIcon: _searchBy(),
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(25.0)),
                     borderSide: BorderSide(color: Colors.white))),
             controller: editingController,
-            onChanged: (text) {
+             onChanged: (text) {
               text = text.toLowerCase();
-              if (text.isNotEmpty) {
+              this.text = text;
+              // if (text.isNotEmpty) {
                 setState(() {
                   isVisible = true;
-                  _postsForDisplay = _posts.where((post) {
-                    var postTitle = post.judul.toLowerCase();
-                    return postTitle.contains(text);
-                  }).toList();
+                  _apiService.search(text);
+                  // _postsForDisplay = _posts.where((post) {
+                  //   var postTitle = post.judul.toLowerCase();
+                  //   return postTitle.contains(text);
+                  // }).toList();
                 });
-              } else if (text.isEmpty) {
-                isVisible = false;
-              }
+              // } else if (text.isEmpty) {
+              //   isVisible = false;
+              // }
             },
           ),
         ),
@@ -167,21 +154,26 @@ class _TabListSearchState extends State<TabListSearch> {
   }
 
   _listtile(index) {
-    return ListTile(
-      contentPadding: EdgeInsets.only(bottom: 10.0),
-      title: Text(_postsForDisplay[index].judul),
-      subtitle: new Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text("Pengarang : ${_postsForDisplay[index].pengarang}"),
-          Text("Letak Rak : ${_postsForDisplay[index].callNumber1}")
-        ],
+    return Card(
+      margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 2.0),
+      color: Colors.white,
+      child: ListTile(
+        trailing: Icon(Icons.arrow_forward_ios),
+        contentPadding: EdgeInsets.only(left: 20.0, right: 10.0),
+        title: Text(_postsForDisplay[index].judul),
+        subtitle: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text("Pengarang : ${_postsForDisplay[index].pengarang}"),
+            Text("Letak Rak : ${_postsForDisplay[index].callNumber1}")
+          ],
+        ),
+        leading: new Icon(Icons.library_books),
+        onTap: () => Navigator.of(context).push(new MaterialPageRoute(
+            builder: (BuildContext context) => new DetailScreen2(
+                  idBuku: _postsForDisplay[index].id,
+                ))),
       ),
-      leading: new Icon(Icons.library_books),
-      onTap: () => Navigator.of(context).push(new MaterialPageRoute(
-          builder: (BuildContext context) => new DetailScreen(
-                idBuku: _postsForDisplay[index].id,
-              ))),
     );
   }
 

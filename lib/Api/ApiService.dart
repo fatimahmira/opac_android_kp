@@ -3,28 +3,49 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:opac_android_kp/Class/Datums.dart';
 import 'package:opac_android_kp/Class/Post.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // http.Client client = http.Client();
-  final String baseURL = "http://172.20.10.3/opac/public";
+   final String baseURL = "http://172.20.10.3/opac/public";
+//  final String baseURL = "https://favian.wtf";
+  // method utk menampilkan List buku no pagination
 
-  //method utk menampilkan List buku no pagination
+  // Future<List<Datum>> fetchPost() async {
+  //   final response = await http.get('$baseURL/api/v1/buku/');
 
-  Future<List<Datum>> fetchPost() async {
-    final response = await http.get('$baseURL/api/v1/buku/');
+  //   var datum = List<Datum>();
+
+  //   if (response.statusCode == 200) {
+  //     var respon = json.decode(response.body);
+  //     var postsJson = respon['data'];
+
+  //     for (var postJson in postsJson) {
+  //       datum.add(Datum.fromJson(postJson));
+  //       print(postJson);
+  //     }
+  //     return datum;
+  //   } else {
+  //     print(response.statusCode.toString());
+  //     throw Exception('Failed to load post');
+  //   }
+  // }
+
+  Future<List<Datum>> search(String text) async {
+    final response = await http.get('$baseURL/api/v1/buku/search?q="$text"');
 
     var datum = List<Datum>();
 
     if (response.statusCode == 200) {
       var respon = json.decode(response.body);
       var postsJson = respon['data'];
+      var data = postsJson['data'];
 
-      for (var postJson in postsJson) {
-        datum.add(Datum.fromJson(postJson));
+      for (var dataJson in data) {
+        datum.add(Datum.fromJson(dataJson));
       }
       return datum;
     } else {
-      print(response.statusCode.toString());
       throw Exception('Failed to load post');
     }
   }
@@ -60,8 +81,11 @@ class ApiService {
       for (var dataJson in data) {
         datum.add(Datum.fromJson(dataJson));
       }
+      // _simpan(datum[0]);
+      // _panggil();
       return datum;
     } else {
+      print("keluar");
       throw Exception('Failed to load post');
     }
   }
@@ -129,5 +153,17 @@ class ApiService {
       return false;
     }
   }
+
+  Future simpan(Datum datum) async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var _teks = datumToJson(datum); 
+      await prefs.setString('databukuni', _teks);
+  } 
+
+  Future panggil() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var _ambiltext = prefs.getString('databukuni');
+  print(_ambiltext);
+}
 
 }

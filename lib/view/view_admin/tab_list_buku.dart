@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:opac_android_kp/Api/ApiService.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/custom/custom_list_tile.dart';
-import 'package:opac_android_kp/view/detailScreen.dart';
+import 'package:opac_android_kp/view/view_admin/detailScreen.dart';
+import 'package:opac_android_kp/view/view_user/detailScreen2.dart';
 
-class TabListBuku extends StatefulWidget {
+
+class TabListBukuAdmin extends StatefulWidget {
   @override
-  _TabListBukuState createState() => _TabListBukuState();
+  _TabListBukuAdminState createState() => _TabListBukuAdminState();
 }
 
-class _TabListBukuState extends State<TabListBuku> {
+class _TabListBukuAdminState extends State<TabListBukuAdmin> {
   ApiService _apiService = ApiService();
   List<Datum> _postsForDisplay = List<Datum>();
 
@@ -24,16 +26,12 @@ class _TabListBukuState extends State<TabListBuku> {
 
   @override
   void initState() {
-    // _apiService.fetchPaginate(page).then((value) {
-    //   setState(() {
-    //     isVisible = false;
-    //     _postsForDisplay.addAll(value);
-    //   });
-    // });
-    _apiService.fetchPost().then((value) {
+    _apiService.fetchPaginate(page).then((value) {
       setState(() {
         isVisible = false;
         _postsForDisplay.addAll(value);
+          _apiService.simpan(_postsForDisplay[0]);
+          
       });
     });
     super.initState();
@@ -60,12 +58,19 @@ class _TabListBukuState extends State<TabListBuku> {
                 height: 15,
               ),
               Text(
-                "Daftar Buku",
+                "Daftar Buku admin",
                 style: TextStyle(
+                  fontFamily: "Bebas_Regular",
                     fontSize: 30,
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
+//              FutureBuilder(
+//                  future: _apiService.fetchPaginate(page),
+//                  builder: (context, ) {
+//                    ConnectionState.active ? Text("koneksi aktif") : Text("koneksi tdk aktif");
+//                  }
+//              ),
               _paginate(),
               // _list(),
               Container(
@@ -83,9 +88,9 @@ class _TabListBukuState extends State<TabListBuku> {
       onNotification: (ScrollNotification scrollInfo) {
         if (!isLoading &&
             scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-          // setState(() {
-          //   isLoading = true;
-          // });
+          setState(() {
+            isLoading = true;
+          });
           _loadData();
         }
       },
@@ -96,49 +101,48 @@ class _TabListBukuState extends State<TabListBuku> {
   _list() {
     return Expanded(
       child: FutureBuilder<List<Datum>>(
-        future: _apiService.fetchPost(),
+        future: _apiService.fetchPaginate(page),
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           return snapshot.hasData
-              ? AnimatedListViewScroll(
+              ? new ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 10.0),
+                  itemCount: _postsForDisplay.length,
                   itemBuilder: (context, index) {
-                    return AnimatedListViewItem(
-                      key: GlobalKey(),
-                      index: index,
-                      animationBuilder: (context, index, controller) {
-                        Animation<Offset> animation = Tween<Offset>(
-                                begin: Offset(1.0, 0.0), end: Offset.zero)
-                            .animate(controller);
-                        return SlideTransition(
-                            position: animation, child: _listtile(index));
-                      },
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 10.0),
+                      child: _listtile(index),
                     );
-                    // return _listtile(index);
-                  },
-                  animationOnReverse: true,
-                  animationDuration: Duration(milliseconds: 200),
-                  itemHeight: 139,
-                  itemCount: _postsForDisplay.length)
-              // new ListView.builder(
-              //     padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 10.0),
-              //     itemCount: _postsForDisplay.length,
-              //     itemBuilder: (context, index) {
-              //       return Padding(
-              //         padding: EdgeInsets.only(bottom: 10.0),
-              //         child: _listtile(index),
-              //       );
-              //     })
-              : _circularProcces();
+                  })
+              : _circularProcces;
         },
       ),
     );
   }
 
   _circularProcces() {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: CircularProgressIndicator(),
+    return Column(
+      children: <Widget>[
+        
+        Container(
+          height: 110,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("images/buku.GIF"),
+                fit: BoxFit.cover,
+              ),
+            )),
+            Text("Please Wait",
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.white
+            ),),
+      ],
     );
+    // Align(
+    //   alignment: Alignment.topCenter,
+    //   child: CircularProgressIndicator(),
+    // );
   }
 
   _listtile(index) {

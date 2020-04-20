@@ -5,7 +5,7 @@ import 'package:opac_android_kp/Api/ApiService.dart';
 import 'package:opac_android_kp/Class/Buku.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/Class/Post.dart';
-import 'package:opac_android_kp/view/detailScreen.dart';
+import 'package:opac_android_kp/view/view_admin/detailScreen.dart';
 
 final format = DateFormat("yyyy");
 
@@ -271,7 +271,7 @@ class _EditBukuState extends State<EditBuku> {
         child: Text("Simpan"),
         onPressed: () {
           editData();
-          Navigator.pushReplacement(context,
+          Navigator.push(context,
               MaterialPageRoute(builder: (BuildContext context) {
             return DetailScreen(
               idBuku: this.widget.id,

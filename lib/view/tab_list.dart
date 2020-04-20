@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:opac_android_kp/view/tab_list_buku.dart';
-import 'package:opac_android_kp/view/tab_list_search.dart';
-import 'package:opac_android_kp/view/tab_list_subjek.dart';
+import 'package:opac_android_kp/view/view_user/tab_list_buku.dart';
+import 'package:opac_android_kp/view/view_user/tab_list_search.dart';
+import 'package:opac_android_kp/view/view_user/tab_list_subjek.dart';
 import 'package:shifting_tabbar/shifting_tabbar.dart';
 
 class TabList extends StatefulWidget {
