@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:opac_android_kp/Class/Post.dart';
 
-import 'editBuku.dart';
 
 class DetailScreen extends StatefulWidget {
   // int id;
