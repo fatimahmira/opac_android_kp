@@ -7,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // http.Client client = http.Client();
-   final String baseURL = "http://172.20.10.3/opac/public";
-//  final String baseURL = "https://favian.wtf";
+  //  final String baseURL = "http://172.20.10.3/opac/public";
+ final String baseURL = "https://favian.wtf";
   // method utk menampilkan List buku no pagination
 
   // Future<List<Datum>> fetchPost() async {

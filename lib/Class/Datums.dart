@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final datums = datumsFromJson(jsonString);
-
 import 'dart:convert';
 
 import 'Post.dart';
