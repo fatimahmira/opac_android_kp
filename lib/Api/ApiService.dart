@@ -7,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // http.Client client = http.Client();
-  //  final String baseURL = "http://172.20.10.3/opac/public";
- final String baseURL = "https://favian.wtf";
+   final String baseURL = "http://172.20.10.3/opac/public";
+//  final String baseURL = "https://favian.wtf";
   // method utk menampilkan List buku no pagination
 
   // Future<List<Datum>> fetchPost() async {
@@ -32,14 +32,15 @@ class ApiService {
   // }
 
   Future<List<Datum>> search(String text) async {
-    final response = await http.get('$baseURL/api/v1/buku/search?q="$text"');
+    final response = await http.get('$baseURL/api/v1/buku/search?q=$text');
 
     var datum = List<Datum>();
 
     if (response.statusCode == 200) {
       var respon = json.decode(response.body);
       var postsJson = respon['data'];
-      var data = postsJson['data'];
+      var datas = postsJson['judul'];
+      var data = datas['data'];
 
       for (var dataJson in data) {
         datum.add(Datum.fromJson(dataJson));
@@ -164,6 +165,7 @@ class ApiService {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var _ambiltext = prefs.getString('databukuni');
   print(_ambiltext);
+  return _ambiltext;
 }
 
 }

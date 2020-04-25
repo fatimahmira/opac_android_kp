@@ -11,11 +11,45 @@ class TabListSearch extends StatefulWidget {
 class _TabListSearchState extends State<TabListSearch> {
   ApiService _apiService = ApiService();
   List<Datum> _posts = List<Datum>();
-  List<Datum> _postsForDisplay = List<Datum>();
+  // List<Datum> _postsForDisplay = List<Datum>();
 
   TextEditingController editingController = TextEditingController();
   int page = 1;
-  String text = "";
+  String text;
+  int _radioValue = 0;
+  int result;
+
+  int selected = 0;
+
+  void onChanged(int value) {
+    setState(() {
+      this.selected = value;
+    });
+    print('Pilihan: ${this.selected}');
+  }
+
+  void _handleRadio(int value) {
+    setState(() {
+      // _radioValue = value;
+
+      switch (value) {
+        case 0:
+          result = _radioValue;
+          _radioValue = value;
+          break;
+        case 1:
+          result = _radioValue;
+          _radioValue = value;
+          break;
+        case 2:
+          result = _radioValue;
+          _radioValue = value;
+          break;
+      }
+
+      value = 0;
+    });
+  }
 
   bool isLoading = false;
   bool isVisible = false;
@@ -24,13 +58,11 @@ class _TabListSearchState extends State<TabListSearch> {
   void initState() {
     this.text = editingController.text.toString();
     // print(text);
-    _apiService.search(text).then((value){
+    _apiService.search(text).then((value) {
       setState(() {
-        isVisible = false;
+        // isVisible = false;
         _posts.addAll(value);
-        _postsForDisplay = _posts;
       });
-
     });
     // _apiService.fetchPost().then((value) {
     //   setState(() {
@@ -65,8 +97,11 @@ class _TabListSearchState extends State<TabListSearch> {
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
+              // _list(),
+              // Text("penerbit"),
+
               _searchBar(),
-              Visibility(visible: isVisible, child: _list()),
+              Text(text), _list()
             ],
           )),
     );
@@ -90,7 +125,7 @@ class _TabListSearchState extends State<TabListSearch> {
 
           return snapshot.hasData
               ? new ListView.builder(
-                  itemCount: _postsForDisplay.length,
+                  itemCount: _posts.length,
                   itemBuilder: (context, index) {
                     return _listtile(index);
                   })
@@ -119,25 +154,22 @@ class _TabListSearchState extends State<TabListSearch> {
                 fillColor: Colors.white,
                 labelText: "Search",
                 prefixIcon: Icon(Icons.search),
+                suffixIcon: _searchBy(),
+                // suff
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(25.0)),
                     borderSide: BorderSide(color: Colors.white))),
             controller: editingController,
-             onChanged: (text) {
-              text = text.toLowerCase();
-              this.text = text;
-              // if (text.isNotEmpty) {
-                setState(() {
-                  isVisible = true;
-                  _apiService.search(text);
-                  // _postsForDisplay = _posts.where((post) {
-                  //   var postTitle = post.judul.toLowerCase();
-                  //   return postTitle.contains(text);
-                  // }).toList();
+            onChanged: (textt) {
+              this.text = textt;
+              setState(() {
+                _posts.clear();
+                _apiService.search(textt).then((value) {
+                  setState(() {
+                    _posts.addAll(value);
+                  });
                 });
-              // } else if (text.isEmpty) {
-              //   isVisible = false;
-              // }
+              });
             },
           ),
         ),
@@ -160,18 +192,18 @@ class _TabListSearchState extends State<TabListSearch> {
       child: ListTile(
         trailing: Icon(Icons.arrow_forward_ios),
         contentPadding: EdgeInsets.only(left: 20.0, right: 10.0),
-        title: Text(_postsForDisplay[index].judul),
+        title: Text(_posts[index].judul),
         subtitle: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text("Pengarang : ${_postsForDisplay[index].pengarang}"),
-            Text("Letak Rak : ${_postsForDisplay[index].callNumber1}")
+            Text("Pengarang : ${_posts[index].pengarang}"),
+            Text("Letak Rak : ${_posts[index].callNumber1}")
           ],
         ),
         leading: new Icon(Icons.library_books),
         onTap: () => Navigator.of(context).push(new MaterialPageRoute(
             builder: (BuildContext context) => new DetailScreen2(
-                  idBuku: _postsForDisplay[index].id,
+                  idBuku: _posts[index].id,
                 ))),
       ),
     );
@@ -181,7 +213,27 @@ class _TabListSearchState extends State<TabListSearch> {
     AlertDialog alertD = new AlertDialog(
       content: new Text("Filter pencarian berdasarkan ..."),
       actions: <Widget>[
-        Radio(value: null, groupValue: null, onChanged: null),
+        Radio(
+          value: 0,
+          groupValue: this.selected,
+          onChanged: (int value) {
+            onChanged(value);
+          },
+        ),
+        Radio(
+          value: 1,
+          groupValue: this.selected,
+          onChanged: (int value) {
+            onChanged(value);
+          },
+        ),
+        Radio(
+          value: 2,
+          groupValue: this.selected,
+          onChanged: (int value) {
+            onChanged(value);
+          },
+        ),
         RaisedButton(
           color: Colors.lightBlue,
           child: new Text("ok"),
@@ -197,3 +249,17 @@ class _TabListSearchState extends State<TabListSearch> {
     // Text("data")
   }
 }
+
+// class dialogFilter extends StatefulWidget {
+//   @override
+//   _dialogFilterState createState() => _dialogFilterState();
+// }
+
+// class _dialogFilterState extends State<dialogFilter> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+
+//     );
+//   }
+// }

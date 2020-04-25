@@ -14,6 +14,7 @@ class TabListBuku extends StatefulWidget {
 class _TabListBukuState extends State<TabListBuku> {
   ApiService _apiService = ApiService();
   List<Datum> _postsForDisplay = List<Datum>();
+ 
 
   TextEditingController editingController = TextEditingController();
   int page = 1;
@@ -29,8 +30,10 @@ class _TabListBukuState extends State<TabListBuku> {
       setState(() {
         isVisible = false;
         _postsForDisplay.addAll(value);
+       
       });
     });
+    
     // _apiService.fetchPost().then((value) {
     //   setState(() {
     //     isVisible = false;
@@ -67,12 +70,6 @@ class _TabListBukuState extends State<TabListBuku> {
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
-//              FutureBuilder(
-//                  future: _apiService.fetchPaginate(page),
-//                  builder: (context, ) {
-//                    ConnectionState.active ? Text("koneksi aktif") : Text("koneksi tdk aktif");
-//                  }
-//              ),
               _paginate(),
               // _list(),
               Container(
