@@ -20,12 +20,12 @@ class Datums {
     factory Datums.fromJson(Map<String, dynamic> json) => Datums(
         status: json["status"],
         message: json["message"],
-        data: Datum.fromJson(json["data"]),
+        data: Datum.fromJson(json["buku"]),
     );
 
     Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
-        "data": data.toJson(),
+        "buku": data.toJson(),
     };
 }

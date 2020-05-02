@@ -6,6 +6,7 @@ import 'package:opac_android_kp/Class/Buku.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/view/view_admin/detailScreen.dart';
+import 'package:sweetalert/sweetalert.dart';
 
 final format = DateFormat("yyyy");
 
@@ -65,9 +66,11 @@ class _EditBukuState extends State<EditBuku> {
         setState(() {
           if (isSuccess) {
             print("edit data berhasil");
+            _sweetAlertSuccess();
             _apiService.fetchDetail(widget.id);
           } else {
             print("edit data gagal");
+            _sweetAlertError();
           }
         });
       }
@@ -119,6 +122,31 @@ class _EditBukuState extends State<EditBuku> {
           ),
         ),
       ),
+    );
+  }
+
+  _sweetAlertSuccess() {
+    return SweetAlert.show(
+      context,
+      title: "Berhasil",
+      subtitle: "mengedit data",
+      style: SweetAlertStyle.success,
+      // onPress:  
+      //   Navigator.of(context).pushReplacement(new MaterialPageRoute(
+      //         builder: (BuildContext context) => new DetailScreen(
+      //               idBuku: this.widget.id,
+      //             )
+      //             )
+      //   )
+        );
+  }
+
+   _sweetAlertError() {
+    return SweetAlert.show(
+      context,
+      title: "Gagal",
+      subtitle: "mengedit data",
+      style: SweetAlertStyle.error,
     );
   }
 
@@ -271,12 +299,10 @@ class _EditBukuState extends State<EditBuku> {
         child: Text("Simpan"),
         onPressed: () {
           editData();
-          Navigator.push(context,
-              MaterialPageRoute(builder: (BuildContext context) {
-            return DetailScreen(
-              idBuku: this.widget.id,
-            );
-          }));
+          // Navigator.of(context).pushReplacement(new MaterialPageRoute(
+          //     builder: (BuildContext context) => new DetailScreen(
+          //           idBuku: this.widget.id,
+          //         )));
         });
   }
 }

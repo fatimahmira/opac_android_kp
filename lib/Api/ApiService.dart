@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // http.Client client = http.Client();
-   final String baseURL = "http://172.20.10.3/opac/public";
+  final String baseURL = "http://172.20.10.3/opac/public";
 //  final String baseURL = "https://favian.wtf";
   // method utk menampilkan List buku no pagination
 
@@ -31,7 +31,7 @@ class ApiService {
   //   }
   // }
 
-  Future<List<Datum>> search(String text) async {
+  Future<List<Datum>> searchJudul(String text) async {
     final response = await http.get('$baseURL/api/v1/buku/search?q=$text');
 
     var datum = List<Datum>();
@@ -40,6 +40,26 @@ class ApiService {
       var respon = json.decode(response.body);
       var postsJson = respon['data'];
       var datas = postsJson['judul'];
+      // var data = datas['data'];
+
+      for (var dataJson in datas) {
+        datum.add(Datum.fromJson(dataJson));
+      }
+      return datum;
+    } else {
+      throw Exception('Failed to load post');
+    }
+  }
+
+  Future<List<Datum>> searchPengarang(String text) async {
+    final response = await http.get('$baseURL/api/v1/buku/search?q=$text');
+
+    var datum = List<Datum>();
+
+    if (response.statusCode == 200) {
+      var respon = json.decode(response.body);
+      var postsJson = respon['data'];
+      var datas = postsJson['pengarang'];
       var data = datas['data'];
 
       for (var dataJson in data) {
@@ -51,6 +71,26 @@ class ApiService {
     }
   }
 
+  Future<List<Datum>> searchPenerbit(String text) async {
+    final response = await http.get('$baseURL/api/v1/buku/search?q=$text');
+
+    var datum = List<Datum>();
+
+    if (response.statusCode == 200) {
+      var respon = json.decode(response.body);
+      var postsJson = respon['data'];
+      var datas = postsJson['penerbit'];
+      var data = datas['data'];
+
+      for (var dataJson in data) {
+        datum.add(Datum.fromJson(dataJson));
+      }
+      return datum;
+    } else {
+      throw Exception('Failed to load post');
+    }
+  }
+  //done
   Future<bool> createBuku(Datum data) async {
     Datums datums = Datums(data: data);
 
@@ -69,31 +109,30 @@ class ApiService {
     }
   }
 
+  //done
   Future<List<Datum>> fetchPaginate(int page) async {
-    final response = await http.get('$baseURL/api/v1/buku/paginate?page=$page');
+    final response = await http.get('$baseURL/api/v1/buku?page=$page');
 
     var datum = List<Datum>();
 
     if (response.statusCode == 200) {
-     var respon = json.decode(response.body);
+      var respon = json.decode(response.body);
       var postsJson = respon['data'];
       var data = postsJson['data'];
 
       for (var dataJson in data) {
         datum.add(Datum.fromJson(dataJson));
       }
-      // _simpan(datum[0]);
-      // _panggil();
       return datum;
     } else {
       print("keluar");
       throw Exception('Failed to load post');
     }
   }
- 
+//done
   Future<Datum> fetchDetail(int id) async {
     Datum bukuClass = Datum();
-    final response = await http.get('$baseURL/api/v1/buku/detail/$id');
+    final response = await http.get('$baseURL/api/v1/buku/$id');
 
     if (response.statusCode == 200) {
       var respon = json.decode(response.body);
@@ -105,9 +144,9 @@ class ApiService {
       throw Exception('Failed to load post');
     }
   }
-
+//done
   Future<List<Datum>> fetcBukuTerkait(int id) async {
-    final response = await http.get('$baseURL/api/v1/buku/detail/$id');
+    final response = await http.get('$baseURL/api/v1/buku/$id');
 
     var datum = List<Datum>();
 
@@ -125,12 +164,12 @@ class ApiService {
       throw Exception('Failed to load post');
     }
   }
-
+//done
   Future<bool> updateBuku(Datum data, int id) async {
     Datums datums = Datums(data: data);
 
     final response = await http.put(
-      "$baseURL/api/v1/buku/update/$id",
+      "$baseURL/api/v1/buku/$id",
       headers: {"content-type": "application/json"},
       body: datumsToJson(datums),
     );
@@ -143,9 +182,9 @@ class ApiService {
       return false;
     }
   }
-
+//done
   Future<bool> deleteBuku(int id) async {
-    final response = await http.delete("$baseURL/api/v1/buku/destroy/$id");
+    final response = await http.delete("$baseURL/api/v1/buku/$id");
     if (response.statusCode == 200) {
       print("berhasil delete");
       return true;
@@ -155,17 +194,16 @@ class ApiService {
     }
   }
 
-  Future simpan(Datum datum) async{
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      var _teks = datumToJson(datum); 
-      await prefs.setString('databukuni', _teks);
-  } 
+  Future simpan(Datum datum) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var _teks = datumToJson(datum);
+    await prefs.setString('databukuni', _teks);
+  }
 
   Future panggil() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var _ambiltext = prefs.getString('databukuni');
-  print(_ambiltext);
-  return _ambiltext;
-}
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var _ambiltext = prefs.getString('databukuni');
+    print(_ambiltext);
+    return _ambiltext;
+  }
 }

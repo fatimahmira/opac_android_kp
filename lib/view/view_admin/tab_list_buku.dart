@@ -4,8 +4,8 @@ import 'package:opac_android_kp/Api/ApiService.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/custom/custom_list_tile.dart';
 import 'package:opac_android_kp/view/view_admin/detailScreen.dart';
+import 'package:opac_android_kp/view/view_form.dart/createBuku.dart';
 import 'package:opac_android_kp/view/view_user/detailScreen2.dart';
-
 
 class TabListBukuAdmin extends StatefulWidget {
   @override
@@ -30,8 +30,7 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
       setState(() {
         isVisible = false;
         _postsForDisplay.addAll(value);
-          _apiService.simpan(_postsForDisplay[0]);
-          
+        _apiService.simpan(_postsForDisplay[0]);
       });
     });
     super.initState();
@@ -53,6 +52,14 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
         debugShowCheckedModeBanner: false,
         home: Scaffold(
             backgroundColor: (Color.fromARGB(255, 139, 215, 234)),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context).push(new MaterialPageRoute(
+                    builder: (BuildContext context) => new CreateBuku()));
+              },
+              tooltip: 'tambah',
+              child: Icon(Icons.add),
+            ),
             body: Column(children: <Widget>[
               Container(
                 height: 15,
@@ -60,17 +67,11 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
               Text(
                 "Daftar Buku admin",
                 style: TextStyle(
-                  fontFamily: "Bebas_Regular",
+                    fontFamily: "Bebas_Regular",
                     fontSize: 30,
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
-//              FutureBuilder(
-//                  future: _apiService.fetchPaginate(page),
-//                  builder: (context, ) {
-//                    ConnectionState.active ? Text("koneksi aktif") : Text("koneksi tdk aktif");
-//                  }
-//              ),
               _paginate(),
               // _list(),
               Container(
@@ -123,20 +124,18 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
   _circularProcces() {
     return Column(
       children: <Widget>[
-        
         Container(
-          height: 110,
+            height: 110,
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("images/buku.GIF"),
                 fit: BoxFit.cover,
               ),
             )),
-            Text("Please Wait",
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.white
-            ),),
+        Text(
+          "Please Wait",
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
       ],
     );
     // Align(
@@ -146,6 +145,7 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
   }
 
   _listtile(index) {
+    String kosong = "-";
     return Column(
       children: <Widget>[
         Material(
@@ -158,9 +158,9 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
             },
             splashColor: Colors.grey,
             child: CustomListTile(
-              judul: _postsForDisplay[index].judul,
-              pengarang: _postsForDisplay[index].pengarang,
-              subjek: _postsForDisplay[index].tajukSubjek,
+              judul: _postsForDisplay[index].judul == null ? kosong :_postsForDisplay[index].judul,
+              pengarang: _postsForDisplay[index].pengarang == null ? kosong :_postsForDisplay[index].pengarang,
+              subjek: _postsForDisplay[index].tajukSubjek == null ? kosong :_postsForDisplay[index].penerbit,
             ),
           ),
         ),

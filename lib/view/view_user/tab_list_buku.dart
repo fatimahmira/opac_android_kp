@@ -45,7 +45,6 @@ class _TabListBukuState extends State<TabListBuku> {
 
   Future _loadData() async {
     await Future.delayed(Duration(seconds: 1, milliseconds: 100));
-
     setState(() {
       isLoading = false;
       page++;
@@ -145,6 +144,7 @@ class _TabListBukuState extends State<TabListBuku> {
   }
 
   _listtile(index) {
+    String kosong = "-";
     return Column(
       children: <Widget>[
         Material(
@@ -157,9 +157,9 @@ class _TabListBukuState extends State<TabListBuku> {
             },
             splashColor: Colors.grey,
             child: CustomListTile(
-              judul: _postsForDisplay[index].judul,
-              pengarang: _postsForDisplay[index].pengarang,
-              subjek: _postsForDisplay[index].tajukSubjek,
+              judul: _postsForDisplay[index].judul == null ? kosong :_postsForDisplay[index].judul,
+              pengarang: _postsForDisplay[index].pengarang == null ? kosong :_postsForDisplay[index].pengarang,
+              subjek: _postsForDisplay[index].tajukSubjek == null ? kosong :_postsForDisplay[index].penerbit,
             ),
           ),
         ),

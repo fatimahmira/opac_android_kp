@@ -58,7 +58,7 @@ class _TabListSearchState extends State<TabListSearch> {
   void initState() {
     this.text = editingController.text.toString();
     // print(text);
-    _apiService.search(text).then((value) {
+    _apiService.searchJudul(text).then((value) {
       setState(() {
         // isVisible = false;
         _posts.addAll(value);
@@ -101,7 +101,7 @@ class _TabListSearchState extends State<TabListSearch> {
               // Text("penerbit"),
 
               _searchBar(),
-              Text(text), _list()
+              _list()
             ],
           )),
     );
@@ -119,7 +119,7 @@ class _TabListSearchState extends State<TabListSearch> {
   _list() {
     return Expanded(
       child: FutureBuilder<List<Datum>>(
-        future: _apiService.search(text),
+        future: _apiService.searchJudul(text),
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
 
@@ -164,7 +164,7 @@ class _TabListSearchState extends State<TabListSearch> {
               this.text = textt;
               setState(() {
                 _posts.clear();
-                _apiService.search(textt).then((value) {
+                _apiService.searchJudul(textt).then((value) {
                   setState(() {
                     _posts.addAll(value);
                   });
@@ -250,16 +250,17 @@ class _TabListSearchState extends State<TabListSearch> {
   }
 }
 
-// class dialogFilter extends StatefulWidget {
-//   @override
-//   _dialogFilterState createState() => _dialogFilterState();
-// }
 
-// class _dialogFilterState extends State<dialogFilter> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
+class dialogFilter extends StatefulWidget {
+  @override
+  _dialogFilterState createState() => _dialogFilterState();
+}
 
-//     );
-//   }
-// }
+class _dialogFilterState extends State<dialogFilter> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+
+    );
+  }
+}

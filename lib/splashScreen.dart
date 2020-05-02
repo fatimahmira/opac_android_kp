@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:opac_android_kp/view/tab_list.dart';
 import 'package:opac_android_kp/view/view_user/homepage_user.dart';
 
 class SplashScreen extends StatefulWidget {
