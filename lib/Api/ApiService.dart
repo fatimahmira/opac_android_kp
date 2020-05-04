@@ -1,11 +1,14 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:opac_android_kp/Class/CacheModel.dart';
 import 'package:opac_android_kp/Class/Datums.dart';
+import 'package:opac_android_kp/Class/HiveModel.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
+  int pages = 1;
   // http.Client client = http.Client();
   final String baseURL = "http://172.20.10.3/opac/public";
 //  final String baseURL = "https://favian.wtf";
@@ -51,46 +54,25 @@ class ApiService {
     }
   }
 
-  Future<List<Datum>> searchPengarang(String text) async {
-    final response = await http.get('$baseURL/api/v1/buku/search?q=$text');
-
-    var datum = List<Datum>();
-
-    if (response.statusCode == 200) {
-      var respon = json.decode(response.body);
-      var postsJson = respon['data'];
-      var datas = postsJson['pengarang'];
-      var data = datas['data'];
-
-      for (var dataJson in data) {
-        datum.add(Datum.fromJson(dataJson));
-      }
-      return datum;
-    } else {
-      throw Exception('Failed to load post');
-    }
+  Future login(String email, String pass) async {
+    String myurl = "https://payment.stai-tbh.ac.id/api/v1/auth/login";
+    final response = http.post(myurl, headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'Application/x-www-form-urlencoded'
+    }, body: {
+      "email": email,
+      "password": pass
+    })
+        // .then((response) {
+        //   print(response.statusCode);
+        //   return(response.statusCode);
+        //   // print(response.body);
+        // })
+        ;
+    return response;
   }
 
-  Future<List<Datum>> searchPenerbit(String text) async {
-    final response = await http.get('$baseURL/api/v1/buku/search?q=$text');
-
-    var datum = List<Datum>();
-
-    if (response.statusCode == 200) {
-      var respon = json.decode(response.body);
-      var postsJson = respon['data'];
-      var datas = postsJson['penerbit'];
-      var data = datas['data'];
-
-      for (var dataJson in data) {
-        datum.add(Datum.fromJson(dataJson));
-      }
-      return datum;
-    } else {
-      throw Exception('Failed to load post');
-    }
-  }
-  //done
+//done
   Future<bool> createBuku(Datum data) async {
     Datums datums = Datums(data: data);
 
@@ -114,7 +96,6 @@ class ApiService {
     final response = await http.get('$baseURL/api/v1/buku?page=$page');
 
     var datum = List<Datum>();
-
     if (response.statusCode == 200) {
       var respon = json.decode(response.body);
       var postsJson = respon['data'];
@@ -123,12 +104,15 @@ class ApiService {
       for (var dataJson in data) {
         datum.add(Datum.fromJson(dataJson));
       }
+      
       return datum;
     } else {
       print("keluar");
       throw Exception('Failed to load post');
     }
+
   }
+
 //done
   Future<Datum> fetchDetail(int id) async {
     Datum bukuClass = Datum();
@@ -144,6 +128,7 @@ class ApiService {
       throw Exception('Failed to load post');
     }
   }
+
 //done
   Future<List<Datum>> fetcBukuTerkait(int id) async {
     final response = await http.get('$baseURL/api/v1/buku/$id');
@@ -164,6 +149,7 @@ class ApiService {
       throw Exception('Failed to load post');
     }
   }
+
 //done
   Future<bool> updateBuku(Datum data, int id) async {
     Datums datums = Datums(data: data);
@@ -182,6 +168,7 @@ class ApiService {
       return false;
     }
   }
+
 //done
   Future<bool> deleteBuku(int id) async {
     final response = await http.delete("$baseURL/api/v1/buku/$id");
@@ -194,16 +181,59 @@ class ApiService {
     }
   }
 
-  Future simpan(Datum datum) async {
+  Future simpan(List<Datum> datum) async {
+    var teks;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var _teks = datumToJson(datum);
-    await prefs.setString('databukuni', _teks);
+    List<String> cache = prefs.getStringList('databukuni');
+    if (cache == null) {
+      for (var _teks in datum) {
+        teks = datumToJson(_teks);
+      }
+    }
+    await prefs.setStringList('databukuni', teks);
   }
 
   Future panggil() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var _ambiltext = prefs.getString('databukuni');
+    var _ambiltext = prefs.getStringList('databukuni');
     print(_ambiltext);
-    return _ambiltext;
+    return _ambiltext ?? 0;
   }
+
+  Future simpanDataBuku(int page) async {
+    HiveModel _hiveModel = HiveModel();
+    page = 1;
+    List<Datum> _datum;
+    // Datum _datum;
+    String buku = "key";
+    try {
+      // cek data cache
+      print('test');
+      CacheModel dataCache;
+      dataCache = await _hiveModel.getCache(buku);
+
+      // print(dataCache);
+
+      if(dataCache == null || dataCache.lastFetchTime.isBefore(DateTime.now().subtract(dataCache.cacheValidDuration))){
+        print("data cache null");
+        _datum = await fetchPaginate(page);
+        // simpan data
+        CacheModel cacheModel = CacheModel(
+          cacheValidDuration: Duration(minutes: 30),
+          lastFetchTime: DateTime.now(),
+          data: _datum
+        );
+        _hiveModel.addCache(cacheModel, buku);
+        return jsonEncode(dataCache.data);
+
+      } else {
+        print("else terakhir");
+        //method else isi data pake data cache
+        // print(jsonEncode(dataCache.data));
+        return jsonEncode(dataCache.data); 
+      }
+    } catch (e) {}
+  }
+
+
 }

@@ -9,6 +9,10 @@ String datumToJson(Datum datum){
     return json.encode(jsonData);
   } 
 
+String datumFromJson(List<Datum> datum){
+    return json.encode(datum);
+  }
+
 class Post {
   bool status;
   String message;

@@ -11,7 +11,6 @@ class TabListSearch extends StatefulWidget {
 class _TabListSearchState extends State<TabListSearch> {
   ApiService _apiService = ApiService();
   List<Datum> _posts = List<Datum>();
-  // List<Datum> _postsForDisplay = List<Datum>();
 
   TextEditingController editingController = TextEditingController();
   int page = 1;

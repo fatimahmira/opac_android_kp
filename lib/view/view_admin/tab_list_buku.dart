@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:animated_list_view_scroll/animated_list_view_scroll.dart';
 import 'package:flutter/material.dart';
 import 'package:opac_android_kp/Api/ApiService.dart';
+import 'package:opac_android_kp/Class/CacheModel.dart';
+import 'package:opac_android_kp/Class/HiveModel.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/custom/custom_list_tile.dart';
 import 'package:opac_android_kp/view/view_admin/detailScreen.dart';
@@ -26,15 +30,51 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
 
   @override
   void initState() {
-    _apiService.fetchPaginate(page).then((value) {
-      setState(() {
-        isVisible = false;
-        _postsForDisplay.addAll(value);
-        _apiService.simpan(_postsForDisplay[0]);
-      });
+    simpanDataBuku(page).then((value){
+      //  for (var dataJson in value) {
+        _postsForDisplay.add(value);
+      // }
     });
+    
     super.initState();
   }
+
+    Future simpanDataBuku(int page) async {
+    HiveModel _hiveModel = HiveModel();
+    page = 1;
+    List<Datum> _datum;
+    String buku = "key";
+    
+
+    try {
+      // cek data cache
+      print('test');
+      CacheModel dataCache;
+      dataCache = await _hiveModel.getCache(buku);
+
+      print(dataCache);
+
+      if(dataCache == null || dataCache.lastFetchTime.isBefore(DateTime.now().subtract(dataCache.cacheValidDuration))){
+        print("data cache null");
+        _datum = await _apiService.fetchPaginate(page);
+        // simpan data
+        CacheModel cacheModel = CacheModel(
+          cacheValidDuration: Duration(minutes: 30),
+          lastFetchTime: DateTime.now(),
+          data: _datum
+        );
+        _hiveModel.addCache(cacheModel, buku);
+        print(jsonEncode(dataCache.data));
+
+      } else {
+        print("else terakhir");
+        print(jsonEncode(dataCache.data));
+        // return jsonEncode(dataCache.data); 
+      }
+    } catch (e) {}
+  }
+
+
 
   Future _loadData() async {
     await Future.delayed(Duration(seconds: 1, milliseconds: 100));
@@ -102,7 +142,7 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
   _list() {
     return Expanded(
       child: FutureBuilder<List<Datum>>(
-        future: _apiService.fetchPaginate(page),
+        future: simpanDataBuku(page),
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           return snapshot.hasData
