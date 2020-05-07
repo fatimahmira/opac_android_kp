@@ -12,25 +12,21 @@ class TabListSearchAdmin extends StatefulWidget {
 class _TabListSearchAdminState extends State<TabListSearchAdmin> {
   ApiService _apiService = ApiService();
   List<Datum> _posts = List<Datum>();
-  List<Datum> _postsForDisplay = List<Datum>();
 
   TextEditingController editingController = TextEditingController();
   int page = 1;
-  String text = "";
-
+  String text = ""; 
+  String kosong = "-";
   bool isLoading = false;
-  bool isVisible = false;
 
   @override
   void initState() {
     this.text = editingController.text.toString();
-    // _apiService.fetchPost().then((value) {
-    //   setState(() {
-    //     isVisible = false;
-    //     _posts.addAll(value);
-    //     _postsForDisplay = _posts;
-    //   });
-    // });
+    _apiService.searchJudul(text).then((value) {
+      setState(() {
+        _posts.addAll(value);
+      });
+    });
     super.initState();
   }
 
@@ -38,14 +34,9 @@ class _TabListSearchAdminState extends State<TabListSearchAdmin> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("images/buku.GIF"),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Column(
+      home: Scaffold(
+          backgroundColor: (Color.fromARGB(255, 139, 215, 234)),
+          body: Column(
             children: <Widget>[
               Container(
                 height: 15,
@@ -58,31 +49,23 @@ class _TabListSearchAdminState extends State<TabListSearchAdmin> {
                     decoration: TextDecoration.none),
               ),
               _searchBar(),
-              Visibility(visible: isVisible, child: _list()),
+              Visibility(visible: isLoading, child: _list()),
             ],
           )),
     );
   }
 
-  _sizedBox() {
-    return SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: new Container(
-          decoration: BoxDecoration(color: Colors.white),
-          child: _list(),
-        ));
-  }
 
   _list() {
     return Expanded(
       child: FutureBuilder<List<Datum>>(
-        // future: _apiService.fetchPost(),
+        future: _apiService.searchJudul(text),
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
 
           return snapshot.hasData
               ? new ListView.builder(
-                  itemCount: _postsForDisplay.length,
+                  itemCount: _posts.length,
                   itemBuilder: (context, index) {
                     return _listtile(index);
                   })
@@ -110,24 +93,25 @@ class _TabListSearchAdminState extends State<TabListSearchAdmin> {
                 filled: true,
                 fillColor: Colors.white,
                 labelText: "Search",
-                suffixIcon: _searchBy(),
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(25.0)),
                     borderSide: BorderSide(color: Colors.white))),
             controller: editingController,
-             onChanged: (text) {
-              text = text.toLowerCase();
-              if (text.isNotEmpty) {
+            onChanged: (textt) {
+              this.text = textt;
+              if (textt.isEmpty) {
+                isLoading = false;
+              } else {
                 setState(() {
-                  isVisible = true;
-                  _postsForDisplay = _posts.where((post) {
-                    var postTitle = post.judul.toLowerCase();
-                    return postTitle.contains(text);
-                  }).toList();
+                  isLoading = true;
+                  _posts.clear();
+                  _apiService.searchJudul(textt).then((value) {
+                    setState(() {
+                      _posts.addAll(value);
+                    });
+                  });
                 });
-              } else if (text.isEmpty) {
-                isVisible = false;
               }
             },
           ),
@@ -136,55 +120,28 @@ class _TabListSearchAdminState extends State<TabListSearchAdmin> {
     );
   }
 
-  _searchBy() {
-    return IconButton(
-        icon: Icon(Icons.low_priority),
-        onPressed: () {
-          return _alertDialog();
-        });
-  }
-
   _listtile(index) {
+    
     return Card(
       margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 2.0),
       color: Colors.white,
       child: ListTile(
         trailing: Icon(Icons.arrow_forward_ios),
         contentPadding: EdgeInsets.only(left: 20.0, right: 10.0),
-        title: Text(_postsForDisplay[index].judul),
+        title: Text(_posts[index].judul ?? kosong),
         subtitle: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text("Pengarang : ${_postsForDisplay[index].pengarang}"),
-            Text("Letak Rak : ${_postsForDisplay[index].callNumber1}")
+            Text("Pengarang : ${_posts[index].pengarang ?? kosong}"),
+            Text("Letak Rak : ${_posts[index].callNumber1 ?? kosong}")
           ],
         ),
         leading: new Icon(Icons.library_books),
         onTap: () => Navigator.of(context).push(new MaterialPageRoute(
-            builder: (BuildContext context) => new DetailScreen2(
-                  idBuku: _postsForDisplay[index].id,
+            builder: (BuildContext context) => new DetailScreen(
+                  idBuku: _posts[index].id,
                 ))),
       ),
     );
-  }
-
-  void _alertDialog() {
-    AlertDialog alertD = new AlertDialog(
-      content: new Text("Filter pencarian berdasarkan ..."),
-      actions: <Widget>[
-        Radio(value: null, groupValue: null, onChanged: null),
-        RaisedButton(
-          color: Colors.lightBlue,
-          child: new Text("ok"),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        )
-        //
-      ],
-    );
-
-    showDialog(context: context, child: alertD);
-    // Text("data")
   }
 }

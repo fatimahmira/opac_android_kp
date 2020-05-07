@@ -1,15 +1,14 @@
-
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:opac_android_kp/Api/ApiService.dart';
+import 'package:opac_android_kp/Class/HiveModel.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/custom/custom_vertical_list.dart';
 
-
 class DetailScreen2 extends StatefulWidget {
-
   int idBuku;
   DetailScreen2({this.idBuku});
 
@@ -19,9 +18,11 @@ class DetailScreen2 extends StatefulWidget {
 
 class _DetailScreen2State extends State<DetailScreen2> {
   int id = 0;
+  String kosong = "-";
   ApiService _apiService = ApiService();
   Datum bukuClass;
   List<Datum> _bukuTerkait = List<Datum>();
+  bool isCache = false;
   static const TextStyle _textcard = TextStyle(
       fontSize: 15.0, fontWeight: FontWeight.bold, color: Colors.white);
   static const TextStyle _textcardbesar = TextStyle(
@@ -30,14 +31,13 @@ class _DetailScreen2State extends State<DetailScreen2> {
   @override
   void initState() {
     id = widget.idBuku;
+    // simpanDataBuku(id);
     setState(() {
       _apiService.fetchDetail(id).then((value) {
-        setState(() {
-          bukuClass = value;
-          _apiService.fetcBukuTerkait(id).then((value) {
-            setState(() {
-              _bukuTerkait.addAll(value);
-            });
+        bukuClass = value;
+        _apiService.fetcBukuTerkait(id).then((value) {
+          setState(() {
+            _bukuTerkait.addAll(value);
           });
         });
       });
@@ -46,14 +46,58 @@ class _DetailScreen2State extends State<DetailScreen2> {
     super.initState();
   }
 
+  // Future simpanDataBuku(int id) async {
+  //   HiveModel _hiveModel = HiveModel();
+  //   String buku = "buku-id-${id.toString()}";
+
+  //   try {
+  //     // cek data cache
+  //     var dataCache;
+  //     dataCache = await _hiveModel.getCache(buku);
+  //     if (dataCache == null ||
+  //         dataCache['lastFetchTime'].isBefore(
+  //             DateTime.now().subtract(dataCache['cacheValidDuration']))) {
+  //       var res = await _apiService.fetchDetail(id);
+
+  //       setState(() {
+  //         bukuClass = res;
+  //         // simpan data
+  //         Map<String, dynamic> mapCache = {
+  //           'cacheValidDuration': Duration(minutes: 30).toString(),
+  //           'lastFetchTime': DateTime.now(),
+  //           'data': jsonEncode(bukuClass)
+  //         };
+  //         _hiveModel.addCache(mapCache, buku);
+  //       });
+  //     } else {
+  //       setState(() {
+  //         isCache = true;
+  //         print("dataaaaaaaaaaaaaaaaaaaaaa");
+  //         print(bukuClass.id);
+  //         // var datum = Datum();
+  //         // for (datum in dataCache['data']) {
+  //         //   bukuClass =  datum;
+  //         // }
+
+  //         // for (var data in dataCache['data']) {
+  //         //   _postsForDisplay.add(data);
+  //         // }
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print("else terakhir asdgr333");
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Detail Buku", style: TextStyle(
-          fontFamily: "Bebas_Regular",)
-        ),
+        title: Text("Detail Buku",
+            style: TextStyle(
+              fontFamily: "Bebas_Regular",
+            )),
         centerTitle: true,
         backgroundColor: Color.fromARGB(255, 139, 215, 234),
         shape: RoundedRectangleBorder(
@@ -94,28 +138,27 @@ class _DetailScreen2State extends State<DetailScreen2> {
                     alignment: Alignment.topLeft,
                     margin: EdgeInsets.only(left: 30.0),
                     child: Card(
-                      color: Colors.white,
-                      shape: new RoundedRectangleBorder(
-                          side: BorderSide(color: Colors.pink),
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(20.0))),
-                      child: 
-                      Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: FutureBuilder<Datum>(
-                          future: _apiService.fetchDetail(widget.idBuku),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasError) print(snapshot.error);
+                        color: Colors.white,
+                        shape: new RoundedRectangleBorder(
+                            side: BorderSide(color: Colors.pink),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
+                        child: Padding(
+                          padding: const EdgeInsets.all(18.0),
+                          child: FutureBuilder<Datum>(
+                            future: _apiService.fetchDetail(widget.idBuku),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) print(snapshot.error);
 
-                            return snapshot.hasData
-                                ?  Text(
-                                bukuClass.callNumber1 +" "+ bukuClass.callNumber2+" "+ bukuClass.callNumber3)
-                                : CircularProgressIndicator();
-                          },
-                        ),
-
-                      )
-                    ),
+                              return snapshot.hasData
+                                  ? Text(bukuClass.callNumber1 ??
+                                      kosong + " " + bukuClass.callNumber2 ??
+                                      kosong + " " + bukuClass.callNumber3 ??
+                                      kosong)
+                                  : CircularProgressIndicator();
+                            },
+                          ),
+                        )),
                   ),
                 ],
               ),
@@ -134,14 +177,10 @@ class _DetailScreen2State extends State<DetailScreen2> {
                   ),
                 ),
               ),
+              Container(height: 250, child: _listBukuTerkait()),
               Container(
-                height: 250,
-                child: _listBukuTerkait()
-              ),
-              Container(
-                  height: 50,
+                height: 50,
               )
-
             ],
           ),
         ],
@@ -182,14 +221,14 @@ class _DetailScreen2State extends State<DetailScreen2> {
               Container(
                 height: 30.0,
               ),
-              Text(bk.noIndukBuku, style: _textcard),
+              Text(bk.noIndukBuku ?? kosong, style: _textcard),
               Text(
-                bk.judul,
+                bk.judul ?? kosong,
                 style: _textcardbesar,
                 textAlign: TextAlign.right,
               ),
               Text(
-                "Pengarang : ${bk.pengarang.isEmpty ? kosong : bk.pengarang}",
+                "Pengarang : ${bk.pengarang ?? kosong}",
                 style: _textcard,
                 textAlign: TextAlign.right,
               ),
@@ -203,8 +242,7 @@ class _DetailScreen2State extends State<DetailScreen2> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       new Icon(Icons.turned_in_not, color: Colors.white),
-                      new Text(
-                          " ${bk.tajukSubjek.isEmpty ? kosong : bk.tajukSubjek}",
+                      new Text(" ${bk.tajukSubjek ?? kosong}",
                           overflow: TextOverflow.visible,
                           style: _textcard,
                           textAlign: TextAlign.center),
@@ -216,10 +254,8 @@ class _DetailScreen2State extends State<DetailScreen2> {
                       new Icon(Icons.book, color: Colors.white),
                       Column(
                         children: <Widget>[
-                          new Text(
-                              " ${bk.jumlahHalaman.isEmpty ? kosong : bk.jumlahHalaman + " lembar"}",
-                              style: _textcard,
-                              textAlign: TextAlign.center),
+                          new Text(" ${bk.jumlahHalaman ?? kosong + " lembar"}",
+                              style: _textcard, textAlign: TextAlign.center),
                         ],
                       ),
                     ],
@@ -239,10 +275,8 @@ class _DetailScreen2State extends State<DetailScreen2> {
                     child: Column(
                       children: <Widget>[
                         new Text("Penerbit", style: _textcard),
-                        new Text(
-                          " ${bk.penerbit.isEmpty ? kosong : bk.penerbit} ",
-                            style: _textcard,
-                            textAlign: TextAlign.center)
+                        new Text(" ${bk.penerbit ?? kosong} ",
+                            style: _textcard, textAlign: TextAlign.center)
                       ],
                     ),
                   ),
@@ -256,10 +290,8 @@ class _DetailScreen2State extends State<DetailScreen2> {
                     child: Column(
                       children: <Widget>[
                         new Text("Kota Terbit", style: _textcard),
-                        new Text(
-                            " ${bk.kotaTerbit.isEmpty ? kosong : bk.kotaTerbit}",
-                            style: _textcard,
-                            textAlign: TextAlign.center),
+                        new Text(" ${bk.kotaTerbit ?? kosong}",
+                            style: _textcard, textAlign: TextAlign.center),
                       ],
                     ),
                   ),
@@ -273,10 +305,8 @@ class _DetailScreen2State extends State<DetailScreen2> {
                     child: Column(
                       children: <Widget>[
                         new Text("Tahun Terbit", style: _textcard),
-                        new Text(
-                            " ${bk.tahunTerbit.isEmpty ? kosong : bk.tahunTerbit}",
-                            style: _textcard,
-                            textAlign: TextAlign.center),
+                        new Text(" ${bk.tahunTerbit ?? kosong}",
+                            style: _textcard, textAlign: TextAlign.center),
                       ],
                     ),
                   ),
@@ -294,43 +324,39 @@ class _DetailScreen2State extends State<DetailScreen2> {
             children: <Widget>[
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
+                new Text("Jilid : ${bk.jilidKe.isEmpty ?? kosong + " lembar"}",
+                    style: _textcard, textAlign: TextAlign.center),
+              ]),
+              Row(children: <Widget>[
+                new Icon(Icons.book, color: Colors.white),
+                new Text("ISBN : ${bk.isbn.isEmpty ?? kosong + " lembar"}",
+                    style: _textcard, textAlign: TextAlign.center),
+              ]),
+              Row(children: <Widget>[
+                new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "Jilid : ${bk.jilidKe.isEmpty ? kosong : bk.jilidKe + " lembar"}",
+                    "Edisi ke : ${bk.edisiKe.isEmpty ?? kosong + " lembar"}",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "ISBN : ${bk.isbn.isEmpty ? kosong : bk.isbn + " lembar"}",
+                    "Cetakan ke : ${bk.cetakanKe.isEmpty ?? kosong + " lembar"}",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "Edisi ke : ${bk.edisiKe.isEmpty ? kosong : bk.edisiKe + " lembar"}",
+                    "Jumlah Eksemplar : ${bk.jumlahEksemplar.isEmpty ?? kosong + " lembar"}",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "Cetakan ke : ${bk.cetakanKe.isEmpty ? kosong : bk.cetakanKe + " lembar"}",
-                    style: _textcard,
-                    textAlign: TextAlign.center),
-              ]),
-              Row(children: <Widget>[
-                new Icon(Icons.book, color: Colors.white),
-                new Text(
-                    "Jumlah Eksemplar : ${bk.jumlahEksemplar.isEmpty ? kosong : bk.jumlahEksemplar + " lembar"}",
-                    style: _textcard,
-                    textAlign: TextAlign.center),
-              ]),
-              Row(children: <Widget>[
-                new Icon(Icons.book, color: Colors.white),
-                new Text(
-                    "Tinggi buku : ${bk.tinggiBuku.isEmpty ? kosong : bk.tinggiBuku + " lembar"}",
+                    "Tinggi buku : ${bk.tinggiBuku.isEmpty ?? kosong + " lembar"}",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),
@@ -370,7 +396,8 @@ class _DetailScreen2State extends State<DetailScreen2> {
             onTap: () {
               Navigator.of(context).push(new MaterialPageRoute(
                   builder: (BuildContext context) => new DetailScreen2(
-                        idBuku: _bukuTerkait[index].id,)));
+                        idBuku: _bukuTerkait[index].id,
+                      )));
             },
             splashColor: Colors.amber,
             child: CustomVerticalList(

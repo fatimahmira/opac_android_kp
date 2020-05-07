@@ -50,24 +50,5 @@ class _TabListSubjekState extends State<TabListSubjek> {
     );
   }
 
-//  _listBukuTerkait() {
-//    return Expanded(
-//      child: FutureBuilder<List<Datum>>(
-//        future: _apiService.fetcBukuTerkait(id),
-//        builder: (context, snapshot) {
-//          if (snapshot.hasError) print(snapshot.error);
-//
-//          return snapshot.hasData
-//              ? new ListView.builder(
-//              scrollDirection: Axis.horizontal,
-//              itemCount: _bukuTerkait.length,
-//              itemBuilder: (context, index) {
-//                return _listtile(index);
-//              })
-//              : _circularProcces();
-//        },
-//      ),
-//    );
-//  }
 
 }

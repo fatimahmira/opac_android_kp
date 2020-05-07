@@ -15,43 +15,9 @@ class _TabListSearchState extends State<TabListSearch> {
   TextEditingController editingController = TextEditingController();
   int page = 1;
   String text;
-  int _radioValue = 0;
-  int result;
-
-  int selected = 0;
-
-  void onChanged(int value) {
-    setState(() {
-      this.selected = value;
-    });
-    print('Pilihan: ${this.selected}');
-  }
-
-  void _handleRadio(int value) {
-    setState(() {
-      // _radioValue = value;
-
-      switch (value) {
-        case 0:
-          result = _radioValue;
-          _radioValue = value;
-          break;
-        case 1:
-          result = _radioValue;
-          _radioValue = value;
-          break;
-        case 2:
-          result = _radioValue;
-          _radioValue = value;
-          break;
-      }
-
-      value = 0;
-    });
-  }
-
+  String kosong = "-";
+ 
   bool isLoading = false;
-  bool isVisible = false;
 
   @override
   void initState() {
@@ -59,17 +25,9 @@ class _TabListSearchState extends State<TabListSearch> {
     // print(text);
     _apiService.searchJudul(text).then((value) {
       setState(() {
-        // isVisible = false;
         _posts.addAll(value);
       });
     });
-    // _apiService.fetchPost().then((value) {
-    //   setState(() {
-    //     isVisible = false;
-    //     _posts.addAll(value);
-    //     _postsForDisplay = _posts;
-    //   });
-    // });
     super.initState();
   }
 
@@ -77,14 +35,9 @@ class _TabListSearchState extends State<TabListSearch> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("images/buku.GIF"),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Column(
+      home: Scaffold(
+          backgroundColor: (Color.fromARGB(255, 139, 215, 234)),
+          body: Column(
             children: <Widget>[
               Container(
                 height: 15,
@@ -96,23 +49,14 @@ class _TabListSearchState extends State<TabListSearch> {
                     color: Colors.white,
                     decoration: TextDecoration.none),
               ),
-              // _list(),
-              // Text("penerbit"),
-
               _searchBar(),
-              _list()
+              Visibility(
+                child: _list(),
+                visible: isLoading,
+              )
             ],
           )),
     );
-  }
-
-  _sizedBox() {
-    return SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: new Container(
-          decoration: BoxDecoration(color: Colors.white),
-          child: _list(),
-        ));
   }
 
   _list() {
@@ -153,35 +97,30 @@ class _TabListSearchState extends State<TabListSearch> {
                 fillColor: Colors.white,
                 labelText: "Search",
                 prefixIcon: Icon(Icons.search),
-                suffixIcon: _searchBy(),
-                // suff
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(25.0)),
                     borderSide: BorderSide(color: Colors.white))),
             controller: editingController,
             onChanged: (textt) {
               this.text = textt;
-              setState(() {
-                _posts.clear();
-                _apiService.searchJudul(textt).then((value) {
-                  setState(() {
-                    _posts.addAll(value);
+              if (textt.isEmpty) {
+                isLoading = false;
+              } else {
+                setState(() {
+                  isLoading = true;
+                  _posts.clear();
+                  _apiService.searchJudul(textt).then((value) {
+                    setState(() {
+                      _posts.addAll(value);
+                    });
                   });
                 });
-              });
+              }
             },
           ),
         ),
       ],
     );
-  }
-
-  _searchBy() {
-    return IconButton(
-        icon: Icon(Icons.low_priority),
-        onPressed: () {
-          return _alertDialog();
-        });
   }
 
   _listtile(index) {
@@ -191,12 +130,12 @@ class _TabListSearchState extends State<TabListSearch> {
       child: ListTile(
         trailing: Icon(Icons.arrow_forward_ios),
         contentPadding: EdgeInsets.only(left: 20.0, right: 10.0),
-        title: Text(_posts[index].judul),
+        title: Text(_posts[index].judul?? kosong),
         subtitle: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text("Pengarang : ${_posts[index].pengarang}"),
-            Text("Letak Rak : ${_posts[index].callNumber1}")
+            Text("Pengarang : ${_posts[index].pengarang ?? kosong }"),
+            Text("Letak Rak : ${_posts[index].callNumber1?? kosong}")
           ],
         ),
         leading: new Icon(Icons.library_books),
@@ -205,61 +144,6 @@ class _TabListSearchState extends State<TabListSearch> {
                   idBuku: _posts[index].id,
                 ))),
       ),
-    );
-  }
-
-  void _alertDialog() {
-    AlertDialog alertD = new AlertDialog(
-      content: new Text("Filter pencarian berdasarkan ..."),
-      actions: <Widget>[
-        Radio(
-          value: 0,
-          groupValue: this.selected,
-          onChanged: (int value) {
-            onChanged(value);
-          },
-        ),
-        Radio(
-          value: 1,
-          groupValue: this.selected,
-          onChanged: (int value) {
-            onChanged(value);
-          },
-        ),
-        Radio(
-          value: 2,
-          groupValue: this.selected,
-          onChanged: (int value) {
-            onChanged(value);
-          },
-        ),
-        RaisedButton(
-          color: Colors.lightBlue,
-          child: new Text("ok"),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        )
-        //
-      ],
-    );
-
-    showDialog(context: context, child: alertD);
-    // Text("data")
-  }
-}
-
-
-class dialogFilter extends StatefulWidget {
-  @override
-  _dialogFilterState createState() => _dialogFilterState();
-}
-
-class _dialogFilterState extends State<dialogFilter> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-
     );
   }
 }

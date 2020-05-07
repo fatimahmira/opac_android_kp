@@ -19,7 +19,8 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   int id = 0;
-  ApiService _apiService = ApiService();
+  String kosong = "-"; 
+ ApiService _apiService = ApiService();
   Datum bukuClass;
   // BukuClass _bukuClass = BukuClass();
   List<Datum> _bukuTerkait = List<Datum>();
@@ -112,10 +113,10 @@ class _DetailScreenState extends State<DetailScreen> {
                             if (snapshot.hasError) print(snapshot.error);
 
                             return snapshot.hasData
-                                ?  Text(
-                                  "-"
-                                // bukuClass.callNumber1 +" "+ bukuClass.callNumber2+" "+ bukuClass.callNumber3
-                                )
+                                ?  Text(bukuClass.callNumber1 ??
+                                      kosong + " " + bukuClass.callNumber2 ??
+                                      kosong + " " + bukuClass.callNumber3 ??
+                                      kosong)
                                 : CircularProgressIndicator();
                           },
                         ),
@@ -188,14 +189,14 @@ class _DetailScreenState extends State<DetailScreen> {
               Container(
                 height: 30.0,
               ),
-              Text(bk.noIndukBuku == null ? kosong : bk.noIndukBuku, style: _textcard),
+              Text(bk.noIndukBuku ?? kosong, style: _textcard),
               Text(
                 bk.judul,
                 style: _textcardbesar,
                 textAlign: TextAlign.right,
               ),
               Text(
-                "Pengarang : ${bk.pengarang == null ? kosong : bk.pengarang}",
+                "Pengarang : ${bk.pengarang ?? kosong}",
                 style: _textcard,
                 textAlign: TextAlign.right,
               ),
@@ -210,7 +211,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: <Widget>[
                       new Icon(Icons.turned_in_not, color: Colors.white),
                       new Text(
-                          " ${bk.tajukSubjek == null ? kosong : bk.tajukSubjek}",
+                          " ${bk.tajukSubjek ?? kosong}",
                           overflow: TextOverflow.visible,
                           style: _textcard,
                           textAlign: TextAlign.center),
@@ -223,7 +224,7 @@ class _DetailScreenState extends State<DetailScreen> {
                       Column(
                         children: <Widget>[
                           new Text(
-                              " ${bk.jumlahHalaman == null ? kosong : bk.jumlahHalaman + " lembar"}",
+                              " ${bk.jumlahHalaman ?? kosong + " lembar"}",
                               style: _textcard,
                               textAlign: TextAlign.center),
                         ],
@@ -246,7 +247,7 @@ class _DetailScreenState extends State<DetailScreen> {
                       children: <Widget>[
                         new Text("Penerbit", style: _textcard),
                         new Text(
-                          " ${bk.penerbit == null ? kosong : bk.penerbit} ",
+                          " ${bk.penerbit ?? kosong} ",
                             style: _textcard,
                             textAlign: TextAlign.center)
                       ],
@@ -263,7 +264,7 @@ class _DetailScreenState extends State<DetailScreen> {
                       children: <Widget>[
                         new Text("Kota Terbit", style: _textcard),
                         new Text(
-                            " ${bk.kotaTerbit== null ? kosong : bk.kotaTerbit}",
+                            " ${bk.kotaTerbit?? kosong}",
                             style: _textcard,
                             textAlign: TextAlign.center),
                       ],
@@ -280,7 +281,7 @@ class _DetailScreenState extends State<DetailScreen> {
                       children: <Widget>[
                         new Text("Tahun Terbit", style: _textcard),
                         new Text(
-                            " ${bk.tahunTerbit == null ? kosong : bk.tahunTerbit}",
+                            " ${bk.tahunTerbit ?? kosong}",
                             style: _textcard,
                             textAlign: TextAlign.center),
                       ],
@@ -301,42 +302,42 @@ class _DetailScreenState extends State<DetailScreen> {
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "Jilid : ${bk.jilidKe == null ? kosong : bk.jilidKe + " lembar"}",
+                    "Jilid : ${bk.jilidKe ?? kosong + " lembar"}",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "ISBN : ${bk.isbn == null ? kosong : bk.isbn + " lembar"}",
+                    "ISBN : ${bk.isbn ?? kosong + " lembar"}",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "Edisi ke : ${bk.edisiKe == null ? kosong : bk.edisiKe + " lembar"}",
+                    "Edisi ke : ${bk.edisiKe ?? kosong + " lembar"}",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "Cetakan ke : ${bk.cetakanKe == null ? kosong : bk.cetakanKe + " lembar"}",
+                    "Cetakan ke : ${bk.cetakanKe ?? kosong + " lembar"}",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "Jumlah Eksemplar : ${bk.jumlahEksemplar == null ? kosong : bk.jumlahEksemplar + " lembar"}",
+                    "Jumlah Eksemplar : ${bk.jumlahEksemplar ?? kosong + " lembar"}",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "Tinggi buku : ${bk.tinggiBuku == null ? kosong : bk.tinggiBuku + " lembar"}",
+                    "Tinggi buku : ${bk.tinggiBuku ?? kosong + " lembar"}",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),

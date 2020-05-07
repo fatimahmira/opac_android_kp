@@ -1,15 +1,12 @@
 import 'dart:convert';
 
-import 'package:animated_list_view_scroll/animated_list_view_scroll.dart';
 import 'package:flutter/material.dart';
 import 'package:opac_android_kp/Api/ApiService.dart';
-import 'package:opac_android_kp/Class/CacheModel.dart';
 import 'package:opac_android_kp/Class/HiveModel.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 import 'package:opac_android_kp/custom/custom_list_tile.dart';
 import 'package:opac_android_kp/view/view_admin/detailScreen.dart';
 import 'package:opac_android_kp/view/view_form.dart/createBuku.dart';
-import 'package:opac_android_kp/view/view_user/detailScreen2.dart';
 
 class TabListBukuAdmin extends StatefulWidget {
   @override
@@ -18,11 +15,14 @@ class TabListBukuAdmin extends StatefulWidget {
 
 class _TabListBukuAdminState extends State<TabListBukuAdmin> {
   ApiService _apiService = ApiService();
-  List<Datum> _postsForDisplay = List<Datum>();
+  List _postsForDisplay = List();
 
   TextEditingController editingController = TextEditingController();
   int page = 1;
   int data = 10;
+
+//  kalau data cache dat set true
+  bool isCache = false;
 
   bool isLoading = false;
 
@@ -30,59 +30,83 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
 
   @override
   void initState() {
-    simpanDataBuku(page).then((value){
-      //  for (var dataJson in value) {
-        _postsForDisplay.add(value);
-      // }
-    });
-    
     super.initState();
+    simpanDataBuku(page);
   }
 
-    Future simpanDataBuku(int page) async {
+  Future simpanDataBuku(int page) async {
     HiveModel _hiveModel = HiveModel();
-    page = 1;
-    List<Datum> _datum;
-    String buku = "key";
-    
+    String buku = "key admin";
 
     try {
       // cek data cache
-      print('test');
-      CacheModel dataCache;
+      var dataCache;
       dataCache = await _hiveModel.getCache(buku);
+      if (dataCache == null ||
+          dataCache['lastFetchTime'].isBefore(
+              DateTime.now().subtract(dataCache['cacheValidDuration']))) {
+        var res = await _apiService.fetchPaginate(page);
 
-      print(dataCache);
-
-      if(dataCache == null || dataCache.lastFetchTime.isBefore(DateTime.now().subtract(dataCache.cacheValidDuration))){
-        print("data cache null");
-        _datum = await _apiService.fetchPaginate(page);
-        // simpan data
-        CacheModel cacheModel = CacheModel(
-          cacheValidDuration: Duration(minutes: 30),
-          lastFetchTime: DateTime.now(),
-          data: _datum
-        );
-        _hiveModel.addCache(cacheModel, buku);
-        print(jsonEncode(dataCache.data));
-
+        setState(() {
+          for (var data in res) {
+            _postsForDisplay.add(data);
+          }
+          // simpan data
+          Map<String, dynamic> mapCache = {
+            'cacheValidDuration': Duration(minutes: 30).toString(),
+            'lastFetchTime': DateTime.now(),
+            'data': jsonEncode(_postsForDisplay)
+          };
+          _hiveModel.addCache(mapCache, buku);
+        });
       } else {
-        print("else terakhir");
-        print(jsonEncode(dataCache.data));
-        // return jsonEncode(dataCache.data); 
+        setState(() {
+          isCache = true;
+          for (var data in dataCache['data']) {
+            _postsForDisplay.add(data);
+          }
+        });
       }
-    } catch (e) {}
+    } catch (e) {
+      print("else terakhir asdgr333");
+    }
   }
 
+  Future getMoreDataBuku(int page) async {
+    print('more');
+    HiveModel _hiveModel = HiveModel();
+    String buku = "key admin";
 
+    try {
+      var res = await _apiService.fetchPaginate(page);
+      print(res.runtimeType);
+      setState(() {
+        //        set iscache false
+        isCache = false;
+
+        for (var data in res) {
+          _postsForDisplay.add(data);
+        }
+        // simpan data
+        Map<String, dynamic> mapCache = {
+          'cacheValidDuration': Duration(minutes: 30).toString(),
+          'lastFetchTime': DateTime.now(),
+          'data': jsonEncode(_postsForDisplay)
+        };
+
+        _hiveModel.addCache(mapCache, buku);
+      });
+    } catch (e) {
+      print("else terakhir");
+    }
+  }
 
   Future _loadData() async {
     await Future.delayed(Duration(seconds: 1, milliseconds: 100));
-
     setState(() {
       isLoading = false;
       page++;
-      initState();
+      getMoreDataBuku(page);
     });
   }
 
@@ -141,24 +165,19 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
 
   _list() {
     return Expanded(
-      child: FutureBuilder<List<Datum>>(
-        future: simpanDataBuku(page),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData
-              ? new ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 10.0),
-                  itemCount: _postsForDisplay.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: 10.0),
-                      child: _listtile(index),
-                    );
-                  })
-              : _circularProcces;
-        },
-      ),
-    );
+        child: _postsForDisplay != null
+            ? ListView.builder(
+                cacheExtent: 10.0,
+                padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 10.0),
+                itemCount: _postsForDisplay.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 10.0),
+                    child: _listtile(index),
+                    // child: _listtiles()
+                  );
+                })
+            : _circularProcces());
   }
 
   _circularProcces() {
@@ -178,14 +197,18 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
         ),
       ],
     );
-    // Align(
-    //   alignment: Alignment.topCenter,
-    //   child: CircularProgressIndicator(),
-    // );
   }
 
   _listtile(index) {
     String kosong = "-";
+    Datum datum;
+    String typeData = _postsForDisplay[index].runtimeType.toString();
+    print(_postsForDisplay[index]);
+    if (typeData == "_InternalLinkedHashMap<String, dynamic>") {
+      datum = Datum.fromJson(_postsForDisplay[index]);
+    } else {
+      datum = _postsForDisplay[index];
+    }
     return Column(
       children: <Widget>[
         Material(
@@ -193,14 +216,14 @@ class _TabListBukuAdminState extends State<TabListBukuAdmin> {
             onTap: () {
               Navigator.of(context).push(new MaterialPageRoute(
                   builder: (BuildContext context) => new DetailScreen(
-                        idBuku: _postsForDisplay[index].id,
+                        idBuku: datum.id,
                       )));
             },
             splashColor: Colors.grey,
             child: CustomListTile(
-              judul: _postsForDisplay[index].judul == null ? kosong :_postsForDisplay[index].judul,
-              pengarang: _postsForDisplay[index].pengarang == null ? kosong :_postsForDisplay[index].pengarang,
-              subjek: _postsForDisplay[index].tajukSubjek == null ? kosong :_postsForDisplay[index].penerbit,
+              judul: datum.judul == null ? kosong : datum.judul,
+              pengarang: datum.pengarang == null ? kosong : datum.pengarang,
+              subjek: datum.tajukSubjek == null ? kosong : datum.penerbit,
             ),
           ),
         ),

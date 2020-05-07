@@ -5,34 +5,11 @@ import 'package:opac_android_kp/Class/CacheModel.dart';
 import 'package:opac_android_kp/Class/Datums.dart';
 import 'package:opac_android_kp/Class/HiveModel.dart';
 import 'package:opac_android_kp/Class/Post.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  int pages = 1;
-  // http.Client client = http.Client();
-  final String baseURL = "http://172.20.10.3/opac/public";
-//  final String baseURL = "https://favian.wtf";
-  // method utk menampilkan List buku no pagination
+  //  String baseURL = "http://172.20.10.3/opac/public";
+ final String baseURL = "https://favian.wtf";
 
-  // Future<List<Datum>> fetchPost() async {
-  //   final response = await http.get('$baseURL/api/v1/buku/');
-
-  //   var datum = List<Datum>();
-
-  //   if (response.statusCode == 200) {
-  //     var respon = json.decode(response.body);
-  //     var postsJson = respon['data'];
-
-  //     for (var postJson in postsJson) {
-  //       datum.add(Datum.fromJson(postJson));
-  //       print(postJson);
-  //     }
-  //     return datum;
-  //   } else {
-  //     print(response.statusCode.toString());
-  //     throw Exception('Failed to load post');
-  //   }
-  // }
 
   Future<List<Datum>> searchJudul(String text) async {
     final response = await http.get('$baseURL/api/v1/buku/search?q=$text');
@@ -43,7 +20,6 @@ class ApiService {
       var respon = json.decode(response.body);
       var postsJson = respon['data'];
       var datas = postsJson['judul'];
-      // var data = datas['data'];
 
       for (var dataJson in datas) {
         datum.add(Datum.fromJson(dataJson));
@@ -62,13 +38,7 @@ class ApiService {
     }, body: {
       "email": email,
       "password": pass
-    })
-        // .then((response) {
-        //   print(response.statusCode);
-        //   return(response.statusCode);
-        //   // print(response.body);
-        // })
-        ;
+    });
     return response;
   }
 
@@ -179,25 +149,6 @@ class ApiService {
       print("tidak berhasil delete");
       return false;
     }
-  }
-
-  Future simpan(List<Datum> datum) async {
-    var teks;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> cache = prefs.getStringList('databukuni');
-    if (cache == null) {
-      for (var _teks in datum) {
-        teks = datumToJson(_teks);
-      }
-    }
-    await prefs.setStringList('databukuni', teks);
-  }
-
-  Future panggil() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var _ambiltext = prefs.getStringList('databukuni');
-    print(_ambiltext);
-    return _ambiltext ?? 0;
   }
 
   Future simpanDataBuku(int page) async {

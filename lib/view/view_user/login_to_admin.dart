@@ -20,7 +20,7 @@ class _LoginAdminState extends State<LoginAdmin> {
   final _formkey = GlobalKey<FormState>();
 
   bool isUserNonValid = false;
-  bool isLogin = true;
+  bool isLogin = false;
   bool isLoading = false;
   String user = '';
   String pass = '';
@@ -121,30 +121,26 @@ class _LoginAdminState extends State<LoginAdmin> {
           if (value.statusCode == 200) {
             setState(() {
               isLoading = false;
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (BuildContext context) => HomePageAdmin()));
             });
             print("masuk");
             Toast.show("Masuk", context,
                 duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
           } else if (value.statusCode == 401) {
-             setState(() {
+            setState(() {
               isLoading = false;
             });
             Toast.show("Email/Password salah", context,
                 duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
           } else {
-             setState(() {
+            setState(() {
               isLoading = false;
             });
             Toast.show("gagal", context,
                 duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
           }
         });
-
-        // Navigator.of(context).pushNamedAndRemoveUntil(
-        //   '/homepageadmin', (Route<dynamic> route) => true );
-        // Navigator.of(context).pushReplacement(MaterialPageRoute(
-        //     builder: (BuildContext context) =>
-        //         HomePageAdmin() ));
       },
       disabledColor: Colors.grey,
       color: Color.fromARGB(255, 161, 211, 255),
@@ -163,65 +159,24 @@ class _LoginAdminState extends State<LoginAdmin> {
   }
 
   Future login(String email, String pass) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String myurl = "https://payment.stai-tbh.ac.id/api/v1/auth/login";
-    final response = http.post(myurl, headers: {
+    final response = await http.post(myurl, headers: {
       'Accept': 'application/json',
       'Content-Type': 'Application/x-www-form-urlencoded'
     }, body: {
       "email": email,
       "password": pass
-    })
-        // .then((response) {
-        //   print(response.statusCode);
-        //   return(response.statusCode);
-        //   // print(response.body);
-        // })
-        ;
+    });
+
+    if (response.statusCode == 200) {
+      setState(() {
+        isLogin = true;
+        sharedPreferences.setBool("isLogin", isLogin);
+        print("iniiiiiiiiiiiiiiiiiibuaaaaaaaaaaat logiiiiiiiinnnnnn");
+        print(sharedPreferences.getBool("isLogin"));
+      });
+    }
     return response;
   }
-
-  void _submit(String username, String password) async {
-    if (_formkey.currentState.validate()) {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-      final url = "https://payment.stai-tbh.ac.id/api/v1/auth/login";
-      var data = {
-        "email": username,
-        "password": password,
-      };
-
-      final response = await http.post(url,
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: data);
-
-      var message = json.decode(response.body);
-      if (message['status'] == "1") {
-        isUserNonValid = true;
-        nonValid = message['message'];
-        setState(() {
-          Toast.show("Email/Password salah", context,
-              duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
-        });
-      } else if (message['status'] == "0") {
-        setState(() {
-          sharedPreferences.setString("token", message['data']['accessToken']);
-          sharedPreferences.setBool("isLogin", isLogin);
-          Toast.show("masuk", context,
-              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-          // Navigator.pushReplacementNamed(context, '/homePage');
-        });
-      }
-    }
-  }
-
-  // void showColoredToast(String msg) {
-  //   Toast.showToast(
-  //       msg: msg,
-  //       toastLength: Toast.LENGTH_SHORT,
-  //       backgroundColor: Colors.red,
-  //       textColor: Colors.white);
-  // }
 }

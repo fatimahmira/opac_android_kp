@@ -2,20 +2,35 @@ import 'dart:convert';
 
 import 'package:hive/hive.dart';
 import 'package:opac_android_kp/Class/CacheModel.dart';
+import 'package:opac_android_kp/Class/Paginate.dart';
+import 'package:opac_android_kp/Class/Post.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 
 class HiveModel {
 
-  void addCache(var cacheModel, String key) async{
+  void addCache(var data, String key) async{
     var pathDoc = await pathProvider.getApplicationDocumentsDirectory();
     Hive.init(pathDoc.path);
     var box = await Hive.openBox('cacheBox');
 
-    print(cacheModelToJson(cacheModel));
-    String data = jsonEncode(cacheModel);
     
     print(data.runtimeType);
     box.put(key, data);
+  }
+
+  Duration parseDuration(String s) {
+    int hours = 0;
+    int minutes = 0;
+    int micros;
+    List<String> parts = s.split(':');
+    if (parts.length > 2) {
+      hours = int.parse(parts[parts.length - 3]);
+    }
+    if (parts.length > 1) {
+      minutes = int.parse(parts[parts.length - 2]);
+    }
+    micros = (double.parse(parts[parts.length - 1]) * 1000000).round();
+    return Duration(hours: hours, minutes: minutes, microseconds: micros);
   }
 
   Future getCache(String key) async{
@@ -24,15 +39,14 @@ class HiveModel {
     var box = await Hive.openBox('cacheBox');
     print('halo get '+key);
     print(box.containsKey(key));
-    CacheModel data = CacheModel();
+    Map<String, dynamic> data = Map();
     if(box.containsKey(key)){
        var data2 = box.get(key);
-       var data3 = jsonDecode(data2);
-       data.cacheValidDuration= data.parseDuration(data3['cacheValidDuration']);
-       data.lastFetchTime = DateTime.parse(data3['lastFetchTime']);
-       data.data = data3['data'];
 
-       print(data3['data']);
+       data['cacheValidDuration'] = parseDuration(data2['cacheValidDuration']);
+       data['lastFetchTime'] = data2['lastFetchTime'];
+       data['data'] = jsonDecode(data2['data']);
+
     }else{
       data = null;
     }
