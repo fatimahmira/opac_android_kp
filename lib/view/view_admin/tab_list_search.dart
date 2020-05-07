@@ -35,6 +35,7 @@ class _TabListSearchAdminState extends State<TabListSearchAdmin> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomPadding: false,
           backgroundColor: (Color.fromARGB(255, 139, 215, 234)),
           body: Column(
             children: <Widget>[

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:opac_android_kp/Api/ApiService.dart';
 import 'package:opac_android_kp/view/view_admin/homepage_admin.dart';
 import 'package:toast/toast.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -35,6 +34,7 @@ class _LoginAdminState extends State<LoginAdmin> {
         '/homepageadmin': (BuildContext context) => new HomePageAdmin()
       },
       home: new Scaffold(
+        resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           backgroundColor: Color.fromARGB(255, 161, 211, 255),
           centerTitle: true,

@@ -7,9 +7,8 @@ import 'package:opac_android_kp/Class/HiveModel.dart';
 import 'package:opac_android_kp/Class/Post.dart';
 
 class ApiService {
-  //  String baseURL = "http://172.20.10.3/opac/public";
- final String baseURL = "https://favian.wtf";
-
+  String baseURL = "http://172.20.10.3/opac/public";
+//  final String baseURL = "https://favian.wtf";
 
   Future<List<Datum>> searchJudul(String text) async {
     final response = await http.get('$baseURL/api/v1/buku/search?q=$text');
@@ -74,13 +73,12 @@ class ApiService {
       for (var dataJson in data) {
         datum.add(Datum.fromJson(dataJson));
       }
-      
+
       return datum;
     } else {
       print("keluar");
       throw Exception('Failed to load post');
     }
-
   }
 
 //done
@@ -165,26 +163,24 @@ class ApiService {
 
       // print(dataCache);
 
-      if(dataCache == null || dataCache.lastFetchTime.isBefore(DateTime.now().subtract(dataCache.cacheValidDuration))){
+      if (dataCache == null ||
+          dataCache.lastFetchTime.isBefore(
+              DateTime.now().subtract(dataCache.cacheValidDuration))) {
         print("data cache null");
         _datum = await fetchPaginate(page);
         // simpan data
         CacheModel cacheModel = CacheModel(
-          cacheValidDuration: Duration(minutes: 30),
-          lastFetchTime: DateTime.now(),
-          data: _datum
-        );
+            cacheValidDuration: Duration(minutes: 30),
+            lastFetchTime: DateTime.now(),
+            data: _datum);
         _hiveModel.addCache(cacheModel, buku);
         return jsonEncode(dataCache.data);
-
       } else {
         print("else terakhir");
         //method else isi data pake data cache
         // print(jsonEncode(dataCache.data));
-        return jsonEncode(dataCache.data); 
+        return jsonEncode(dataCache.data);
       }
     } catch (e) {}
   }
-
-
 }

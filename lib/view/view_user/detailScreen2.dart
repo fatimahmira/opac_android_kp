@@ -254,7 +254,8 @@ class _DetailScreen2State extends State<DetailScreen2> {
                       new Icon(Icons.book, color: Colors.white),
                       Column(
                         children: <Widget>[
-                          new Text(" ${bk.jumlahHalaman ?? kosong + " lembar"}",
+                          new Text(" ${bk.jumlahHalaman ?? kosong} lembar",
+                          overflow: TextOverflow.fade,
                               style: _textcard, textAlign: TextAlign.center),
                         ],
                       ),
@@ -324,41 +325,35 @@ class _DetailScreen2State extends State<DetailScreen2> {
             children: <Widget>[
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
-                new Text("Jilid : ${bk.jilidKe.isEmpty ?? kosong + " lembar"}",
+                new Text("Jilid : ${bk.jilidKe ?? kosong}",
                     style: _textcard, textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
-                new Text("ISBN : ${bk.isbn.isEmpty ?? kosong + " lembar"}",
+                new Text("ISBN : ${bk.isbn ?? kosong }",
+                    style: _textcard, textAlign: TextAlign.center),
+              ]),
+              Row(children: <Widget>[
+                new Icon(Icons.book, color: Colors.white),
+                new Text("Edisi ke : ${bk.edisiKe ?? kosong}",
+                    style: _textcard, textAlign: TextAlign.center),
+              ]),
+              Row(children: <Widget>[
+                new Icon(Icons.book, color: Colors.white),
+                new Text("Cetakan ke : ${bk.cetakanKe ?? kosong}",
                     style: _textcard, textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
                 new Text(
-                    "Edisi ke : ${bk.edisiKe.isEmpty ?? kosong + " lembar"}",
+                    "Jumlah Eksemplar : ${bk.jumlahEksemplar ?? kosong }",
                     style: _textcard,
                     textAlign: TextAlign.center),
               ]),
               Row(children: <Widget>[
                 new Icon(Icons.book, color: Colors.white),
-                new Text(
-                    "Cetakan ke : ${bk.cetakanKe.isEmpty ?? kosong + " lembar"}",
-                    style: _textcard,
-                    textAlign: TextAlign.center),
-              ]),
-              Row(children: <Widget>[
-                new Icon(Icons.book, color: Colors.white),
-                new Text(
-                    "Jumlah Eksemplar : ${bk.jumlahEksemplar.isEmpty ?? kosong + " lembar"}",
-                    style: _textcard,
-                    textAlign: TextAlign.center),
-              ]),
-              Row(children: <Widget>[
-                new Icon(Icons.book, color: Colors.white),
-                new Text(
-                    "Tinggi buku : ${bk.tinggiBuku.isEmpty ?? kosong + " lembar"}",
-                    style: _textcard,
-                    textAlign: TextAlign.center),
+                new Text("Tinggi buku : ${bk.tinggiBuku ?? kosong} cm",
+                    style: _textcard, textAlign: TextAlign.center),
               ]),
             ],
           ),
